@@ -1,8 +1,10 @@
 ﻿using Grasshopper.Kernel;
+using Grasshopper.Kernel.Types;
 using System;
 using Rhino;
 using Rhino.Runtime;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Ants {
     public class AntsEngineByFunction : GH_Component {
@@ -20,24 +22,47 @@ namespace Ants {
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager) {
             pManager.Register_StringParam("Script", "Func", "The function to execute", GH_ParamAccess.item);
+            pManager.Register_IntegerParam("Rows", "M", "Number of rows.", 0, GH_ParamAccess.item);
+            pManager.Register_IntegerParam("Number of Columns", "N", "Number of Columns", 0, GH_ParamAccess.item);
 
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager) {
             pManager.Register_DoubleParam("Value", "Val", "The extracted value", GH_ParamAccess.item);
+            pManager.Register_DoubleParam("List", "List", "List of extracted values", GH_ParamAccess.list);
         }
 
         protected override void SolveInstance(IGH_DataAccess DA) {
             string pyString = "";
-            if ( DA.GetData(0, ref pyString) ) //if it works...
+            int m = 0;
+            int n = 0;
+            int tot = 0;
+
+
+            if (!DA.GetData(0, ref pyString)) return;
+            if (!DA.GetData(1, ref m)) return;
+            if (!DA.GetData(2, ref n)) return;
+
+            tot = m * n;
+            //if ( DA.GetData(0, ref pyString) ) //if it works...
+            //{
+            _py = PythonScript.Create();
+            _compiled_py = _py.Compile(pyString);
+
+            double d = EvaluateCell();
+
+            var t = Type.GetType("IronPython.Runtime.List,IronPython");
+            IList val_list = Activator.CreateInstance(t) as IList;
+            for (int i = 0; i < tot; i++)
             {
-                _py = PythonScript.Create();
-                _compiled_py = _py.Compile(pyString);
-
-                double d = EvaluateCell();
-
-                DA.SetData(0, d);
+                object cast = i;
+                val_list.Add(cast);
             }
+
+            DA.SetData(0, d);
+            DA.SetDataList(1,val_list);
+
+            //}
         }
 
         private double EvaluateCell() {
@@ -65,3 +90,11 @@ namespace Ants {
     }
 
 }
+
+
+//List<double> val_list = new List<double>();
+
+//for (int i = 0; i < tot; i++)
+//{
+//    val_list.Add(i);
+//}
