@@ -38,23 +38,13 @@ namespace Ants {
             if (!DA.GetData(1, ref nCount)) return;
             if (!DA.GetData(2, ref cnrs)) return;
 
-            SpatialGraph gph = new SpatialGraph();
-            
-            for (int m = 0; m < mCount; m++)
-                for (int n = 0; n < nCount; n++)
-                    {
-                        if (n > 0) gph.AddEdge(new Point3d(n, m, 0), new Point3d(n - 1, m, 0));
-                        if (m > 0) gph.AddEdge(new Point3d(n, m, 0), new Point3d(n, m - 1, 0));
-                        if (cnrs)
-                        {
-                            if ((n > 0)&&(m > 0)) gph.AddEdge(new Point3d(n, m, 0), new Point3d(n - 1, m-1, 0));
-                            if ((n > 0) && (m < mCount-1)) gph.AddEdge(new Point3d(n, m, 0), new Point3d(n - 1, m + 1, 0));
-                        }
-                    }
+            SpatialGraph gph = SpatialGraph.GraphFromGrid(mCount, nCount, cnrs);
 
             AWorld wrld = new AWorld(gph);
+
             DA.SetData(0, wrld);
         }
+
 
     }
 
@@ -93,6 +83,49 @@ namespace Ants {
 
     }
 
+
+    public class AWorldSelect : GH_Component
+    {
+
+        public AWorldSelect()
+            //Call the base constructor
+            : base("Ants World Selector", "AWorldSelect", "Select a specific Ant World generation", "Ants", "Worlds") { }
+        public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
+        public override Guid ComponentGuid { get { return new Guid("{43D5097F-F320-4672-AB69-70A1C541F7AF}"); } }
+        
+
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.RegisterParam(new GHParam_AWorld(), "AWorld", "W", "The AntsWorld to convert.", GH_ParamAccess.item);
+            pManager.Register_IntegerParam("Generation", "G", "Generation to select.", 0, GH_ParamAccess.item);
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.Register_DoubleParam("List", "List", "List of extracted values", GH_ParamAccess.list);
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+            AWorld wrld = new AWorld(new SpatialGraph());
+            int Gen = 0;
+            int nGen = 0;
+
+            if (!DA.GetData(0, ref wrld)) return;
+            if (!DA.GetData(1, ref Gen)) return;
+
+            nGen = wrld.gens.Count;
+
+            if (Gen > (nGen - 1)) Gen = 0;
+
+            double[] val_list = new double[wrld.gph.nodes.Count];
+
+            val_list = wrld.gens[Gen];
+
+            DA.SetDataList(0, val_list);
+        }
+
+    }
 
 }
 

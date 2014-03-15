@@ -98,6 +98,26 @@ namespace Ants {
                 }
             }
             return ret;
+
+        }
+
+
+        public static SpatialGraph GraphFromGrid(int mCount, int nCount, bool cnrs)
+        {
+            SpatialGraph gph = new SpatialGraph();
+
+            for (int m = 0; m < mCount; m++)
+                for (int n = 0; n < nCount; n++)
+                {
+                    if (n > 0) gph.AddEdge(new Point3d(n, m, 0), new Point3d(n - 1, m, 0));
+                    if (m > 0) gph.AddEdge(new Point3d(n, m, 0), new Point3d(n, m - 1, 0));
+                    if (cnrs)
+                    {
+                        if ((n > 0) && (m > 0)) gph.AddEdge(new Point3d(n, m, 0), new Point3d(n - 1, m - 1, 0));
+                        if ((n > 0) && (m < mCount - 1)) gph.AddEdge(new Point3d(n, m, 0), new Point3d(n - 1, m + 1, 0));
+                    }
+                }
+            return gph;
         }
 
     }
@@ -127,7 +147,11 @@ namespace Ants {
         {
             //TODO: figure out how to use this method to successively add generations to a world from outside this class
             // TODO: ensure that there are the same number of values stored in the appended list as there are nodes in this.gph
-            this.gens.Add(vals);
+            double[] ret = new double[vals.Length];
+
+            for (int i = 0; i < vals.Length; i++) ret[i] = vals[i];
+
+            this.gens.Add(ret);
         }
 
         #region // REQUIRED GH STUFF
@@ -152,7 +176,7 @@ namespace Ants {
         public override object ScriptVariable() { return new AWorld(this); }
         public override string ToString()
         {
-            return String.Format("I am an Ants World.\n I have {0} nodes in my graph, {1} connections, and {1} generations of history. What else would you like to know?", this.gph.nodes.Count, this.gph.edgeCount, this.gens.Count);
+            return String.Format("I am an Ants World.\n I have {0} nodes in my graph, {1} connections, and {2} generations of history. What else would you like to know?", this.gph.nodes.Count, this.gph.edgeCount, this.gens.Count);
         }
         public override string TypeDescription { get { return "Represents an Ants Graph"; } }
         public override string TypeName { get { return "Ants Graph"; } }
