@@ -66,12 +66,12 @@ namespace Ants {
 
 
 
-    public class AWorldToLines : GH_Component
+    public class AWorldGetEdges : GH_Component
     {
 
-        public AWorldToLines()
+        public AWorldGetEdges()
             //Call the base constructor
-            : base("Ants Grid To Lines", "WorldToLines", "Convert the graph of an AntsWorld to a network of lines", "Ants", "Worlds") { }
+            : base("Get Edges", "GetEdges", "Returns the graph of an AntsWorld as a network of lines", "Ants", "Worlds") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{6D8C293A-A7FF-4C6C-871A-478DAC246B59}"); } }
 
@@ -82,11 +82,12 @@ namespace Ants {
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.Register_LineParam("Lines", "L", "The resulting network of lines", GH_ParamAccess.list);
+            pManager.Register_LineParam("Edges", "E", "The resulting network of lines", GH_ParamAccess.list);
         }
 
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            // Since this component does not operate on the AWorld, we can grab it this way instead of creating a copy
             AWorld wrld = new AWorld();
             if (!DA.GetData(0, ref wrld) || !wrld.IsValid) return;
 
@@ -99,13 +100,56 @@ namespace Ants {
 
     }
 
+    public class AWorldGetNodes : GH_Component {
 
-    public class AWorldSelect : GH_Component
+        public AWorldGetNodes()
+            //Call the base constructor
+            : base("Get Nodes", "GetNodes", "Returns the graph of an AntsWorld as a collection of Nodes. Points (for now) remain fixed for each generation, while values are returned as a tree - one branch per generation.", "Ants", "Worlds") { }
+        public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
+        public override Guid ComponentGuid { get { return new Guid("{CB16E7BA-6327-4A70-B6CD-76ED776861F6}"); } }
+
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager) {
+            pManager.RegisterParam(new GHParam_AWorld(), "AWorld", "W", "The AntsWorld to convert.", GH_ParamAccess.item);
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager) {
+            pManager.Register_PointParam("Points", "P", "Node positions.", GH_ParamAccess.list);
+            pManager.Register_DoubleParam("Values", "V", "A tree of values, each branch corresponds with a single generation of node values.", GH_ParamAccess.tree);
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA) {
+            // Since this component does not operate on the AWorld, we can grab it this way instead of creating a copy
+            AWorld wrld = new AWorld();
+            if (!DA.GetData(0, ref wrld) || !wrld.IsValid) return;
+
+            List<Line> lines = wrld.gph.EdgesToLines();
+
+            List<GH_Point> ghPoints = new List<GH_Point>();
+            foreach (Point3d pt in wrld.gph.nodes) ghPoints.Add(new GH_Point(pt));
+            DA.SetDataList(0, ghPoints);
+
+
+            Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.GH_Number> valueTreeOut = new Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.GH_Number>();
+            for (int g = 0; g < wrld.GenCount; g++){
+                Grasshopper.Kernel.Data.GH_Path key_path = new Grasshopper.Kernel.Data.GH_Path(g);
+                List<Grasshopper.Kernel.Types.GH_Number> gh_vals = new List<Grasshopper.Kernel.Types.GH_Number>();
+                foreach (double d in wrld.gens[g]) gh_vals.Add(new Grasshopper.Kernel.Types.GH_Number(d));
+                valueTreeOut.AppendRange(gh_vals, key_path);
+            }
+            DA.SetDataTree(1, valueTreeOut);
+
+        }
+
+    }
+
+
+
+    public class AWorldGenVals : GH_Component
     {
 
-        public AWorldSelect()
+        public AWorldGenVals()
             //Call the base constructor
-            : base("Ants World Selector", "AWorldSelect", "Select a specific Ant World generation", "Ants", "Worlds") { }
+            : base("Generation Values", "GenVals", "Returns values for a given AntsWorld generation", "Ants", "Worlds") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{43D5097F-F320-4672-AB69-70A1C541F7AF}"); } }
         
@@ -118,7 +162,7 @@ namespace Ants {
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.Register_DoubleParam("List", "List", "List of extracted values", GH_ParamAccess.list);
+            pManager.Register_DoubleParam("Values", "V", "List of extracted values", GH_ParamAccess.list);
         }
 
         protected override void SolveInstance(IGH_DataAccess DA)

@@ -5,12 +5,15 @@ using Rhino;
 using Rhino.Runtime;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Ants {
     public class AntsEngineByFunction : GH_Component {
    
         protected PythonScript _py;
         private PythonCompiledCode _compiled_py;
+        readonly StringList m_py_output = new StringList(); // python output stream is piped to m_py_output
+
         public AntsEngineByFunction()
             //Call the base constructor
             : base("Ants Compoent", "Ants", "Blah", "Ants", "Engine") { }
@@ -21,11 +24,10 @@ namespace Ants {
             pManager.RegisterParam(new GHParam_AWorld(), "AWorld", "W", "The AntsWorld to convert.", GH_ParamAccess.item);
             pManager.Register_StringParam("Script", "Func", "The function to execute", GH_ParamAccess.item);
             pManager.Register_IntegerParam("Generations", "G", "Number of Generations to create.", 0, GH_ParamAccess.item);
-            //pManager.Register_IntegerParam("Number of Columns", "N", "Number of Columns", 0, GH_ParamAccess.item);
-            //pManager.Register_BooleanParam("Connect Corners", "C", "Connect up the neighbors at corners?", false, GH_ParamAccess.item);
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager) {
+            pManager.Register_StringParam("Console", "...", "Messages from Python", GH_ParamAccess.tree);
             pManager.RegisterParam(new GHParam_AWorld(), "AWorld", "W", "The resulting AntsWorld.", GH_ParamAccess.item);
         }
 
@@ -38,77 +40,117 @@ namespace Ants {
             string pyString = "";
             if (!DA.GetData(1, ref pyString)) return;
             if (!DA.GetData(2, ref nGen)) return;
-             
+
             _py = PythonScript.Create();
+            _py.Output = this.m_py_output.Write;
             _compiled_py = _py.Compile(pyString);
 
-            //double d = EvaluateCell();
-            //double d = 1.0;
-
-            //var t = Type.GetType("IronPython.Runtime.List,IronPython");
-            //IList val_list = Activator.CreateInstance(t) as IList;
-            //List<double> val_list  = new List<double>();
-            //int tot = wrld.gph.nodes.Count;
-            //double[] val_list = new double[tot];
+            // console out
+            Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.GH_String> consoleOut = new Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.GH_String>();
 
             // Main evaluation cycle
             // Should move code into the Antsworld Class
-
             for (int g = 0; g < nGen; g++)
             {
-                
-                //double[] cur_list = new double[tot];
-                //cur_list = wrld.gens[g];
-                //cur_list = val_list;
+
+                // console out
+                this.m_py_output.Reset();
 
                 double[] new_vals = new double[wrld.NodeCount];
                 for (int i = 0; i < wrld.NodeCount; i++)
                 {
                     int[] neighboring_indices = wrld.gph.NeighboringIndexesOf(i);
-                    List<double> neighboring_vals = new List<double>();
 
                     // build list of neighboring values
-                    for (int k = 0; k < neighboring_indices.Length; k++) neighboring_vals.Add(wrld.LatestGen[k]);
+                    List<double> neighboring_vals = new List<double>();
+                    for (int k = 0; k < neighboring_indices.Length; k++) neighboring_vals.Add(wrld.LatestGen[neighboring_indices[k]]);
 
-                    //double d = EvaluateCell(wrld.LatestGen[i], neighboring_vals);
-                    double d = g + i + 0.0;
+
+                    double d = EvaluateCell(i, wrld.LatestGen[i], neighboring_vals);
+                    //double d = g + i + 0.0;
 
                     new_vals[i] = d;
                 }
                 wrld.AddGen(new_vals);
-                //for (int i = 0; i < new_list.Length; i++) val_list[i] = new_list[i];
+
+                // console out
+                Grasshopper.Kernel.Data.GH_Path key_path = new Grasshopper.Kernel.Data.GH_Path(g);
+                List<Grasshopper.Kernel.Types.GH_String> gh_strs = new List<Grasshopper.Kernel.Types.GH_String>();
+                foreach (String str in this.m_py_output.Result) gh_strs.Add(new Grasshopper.Kernel.Types.GH_String(str));
+                consoleOut.AppendRange(gh_strs, key_path);
+
 
             }
 
-            DA.SetData(0, wrld);
 
-            //}
+            DA.SetDataTree(0, consoleOut);
+            DA.SetData(1, wrld);
+
+           
+
+
         }
 
-        private double EvaluateCell(double cur_val, List<double> n_vals) {
-           // _py.SetVariable("n_vals", NeighborList());
-            _py.SetVariable("n_vals", n_vals);
-            _py.SetVariable("h_val", cur_val);
-
-            _compiled_py.Execute(_py);
-
-            object o = _py.GetVariable("h_val");
-            double d = System.Convert.ToDouble(o);
-            return d;
-        }
-
-        private object NeighborList() {
-
+        private double EvaluateCell(int cell_index, double cur_val, List<double> n_vals) {
             var t = Type.GetType("IronPython.Runtime.List,IronPython");
-            IList list = Activator.CreateInstance(t) as IList;
-            for (int i = 0; i < 8; i++) {
-                object cast = i;
-                list.Add(cast);
+            IList n_list = Activator.CreateInstance(t) as IList;
+            foreach (double d in n_vals) {
+                object cast = d;
+                n_list.Add(cast);
             }
-            return list;
+            _py.SetVariable("n_vals", n_list);
+            _py.SetVariable("h_val", cur_val);
+            _py.SetVariable("h_idx", cell_index);
+
+            try {
+                _compiled_py.Execute(_py);
+            } catch(Exception ex) {
+                AddErrorNicely(m_py_output, ex);
+            }
+            object o = _py.GetVariable("h_val");
+            return System.Convert.ToDouble(o);
         }
 
+
+       
+        private void AddErrorNicely(StringList sw, Exception ex) {
+            sw.Write(string.Format("Runtime error ({0}): {1}", ex.GetType().Name, ex.Message));
+
+            string error = _py.GetStackTraceFromException(ex);
+
+            error = error.Replace(", in <module>, \"<string>\"", ", in script");
+            error = error.Trim();
+
+            sw.Write(error);
+        }
     }
 
 
+
+
+    /// <summary>
+    /// Used to capture the output stream from an executing python script
+    /// </summary>
+    class StringList {
+        private readonly List<string> _txts = new List<string>();
+
+        public void Write(string s) {
+            _txts.Add(s);
+        }
+
+        public void Reset() {
+            _txts.Clear();
+        }
+
+        public IList<string> Result {
+            get { return new System.Collections.ObjectModel.ReadOnlyCollection<string>(_txts); }
+        }
+
+        public override string ToString() {
+            var sb = new StringBuilder();
+            foreach (string s in _txts)
+                sb.AppendLine(s);
+            return sb.ToString();
+        }
+    }
 }
