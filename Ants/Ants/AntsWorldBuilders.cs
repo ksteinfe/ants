@@ -21,6 +21,7 @@ namespace Ants {
         {
             pManager.Register_IntegerParam("Rows", "M", "Number of rows.", 3, GH_ParamAccess.item);
             pManager.Register_IntegerParam("Number of Columns", "N", "Number of Columns", 3, GH_ParamAccess.item);
+            pManager.Register_DoubleParam("Value", "V", "Initial Values", GH_ParamAccess.list);
             pManager.Register_BooleanParam("Connect Corners", "C", "Connect up the neighbors at corners?", false, GH_ParamAccess.item);
         }
 
@@ -33,14 +34,29 @@ namespace Ants {
         {
             int mCount = 0;
             int nCount = 0;
+            List<double> v_list = new List<double>();            
             bool cnrs = false;
+            
             if (!DA.GetData(0, ref mCount)) return;
             if (!DA.GetData(1, ref nCount)) return;
-            if (!DA.GetData(2, ref cnrs)) return;
+            if (!DA.GetDataList(2, v_list)) return;
+            if (!DA.GetData(3, ref cnrs)) return;
 
+            // TODO: the numbering of the nodes in the resulting graph don't conform to the ordering of a grid.
+            // either make them do so, or find another mechanism for matching given list of values to resulting graph
             SpatialGraph gph = SpatialGraph.GraphFromGrid(mCount, nCount, cnrs);
 
-            AWorld wrld = new AWorld(gph);
+            // Sets the initial Generation by using the input v_list
+            // if it runs out of values, it starts over (wraps)
+            double[] val_list = new double[gph.nodes.Count];
+            int v_i = 0;
+            for (int i = 0; i < gph.nodes.Count; i++) {
+                if (v_i == v_list.Count) v_i = 0;
+                val_list[i] = v_list[v_i];
+                v_i++;
+            }
+
+            AWorld wrld = new AWorld(gph, val_list);
 
             DA.SetData(0, wrld);
         }
@@ -71,8 +87,8 @@ namespace Ants {
 
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            AWorld wrld = new AWorld(new SpatialGraph());
-            if (!DA.GetData(0, ref wrld)) return;
+            AWorld wrld = new AWorld();
+            if (!DA.GetData(0, ref wrld) || !wrld.IsValid) return;
 
             List<Line> lines = wrld.gph.EdgesToLines();
 
@@ -107,22 +123,14 @@ namespace Ants {
 
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            AWorld wrld = new AWorld(new SpatialGraph());
-            int Gen = 0;
-            int nGen = 0;
+            AWorld refwrld = new AWorld();
+            if (!DA.GetData(0, ref refwrld) || !refwrld.IsValid) return;
+            AWorld wrld = new AWorld(refwrld);
 
-            if (!DA.GetData(0, ref wrld)) return;
-            if (!DA.GetData(1, ref Gen)) return;
-
-            nGen = wrld.gens.Count;
-
-            if (Gen > (nGen - 1)) Gen = 0;
-
-            double[] val_list = new double[wrld.gph.nodes.Count];
-
-            val_list = wrld.gens[Gen];
-
-            DA.SetDataList(0, val_list);
+            int g = 0;
+            if (!DA.GetData(1, ref g)) return;
+            if (g > wrld.GenCount - 1) g = wrld.GenCount - 1;
+            DA.SetDataList(0, wrld.gens[g]);
         }
 
     }

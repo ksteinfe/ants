@@ -23,6 +23,12 @@ namespace Ants {
             this.weights = new Dictionary<Tuple<int, int>, double>();
             this.edgeCount = 0;
         }
+        public SpatialGraph(SpatialGraph instance) {
+            this.nodes = new List<Point3d>(instance.nodes);
+            this.edges = new Dictionary<int, List<int>>(instance.edges);
+            this.weights = new Dictionary<Tuple<int, int>, double>(instance.weights);
+            this.edgeCount = instance.edgeCount;
+        } 
 
         public void AddEdge(Point3d fromPt, Point3d toPt, double weight=1.0){
             // Point3d should work okay as a dictionary key, but we may need to override Equals and GetHashCode in a child of Point3d class instead, as per http://stackoverflow.com/questions/3545237/c-sharp-object-as-dictionary-key-problem
@@ -129,11 +135,19 @@ namespace Ants {
         // a list of arrays of doubles. 
         // since we don't know how many timesteps we'll create, we use a List for outer container.
         // but, since we do know how many nodes we have in each timestep, we can use a fixed-size array for the inner container
-        public List<double []> gens; 
+        public List<double []> gens;
+        public double[] igen;
+        public bool initialized;
 
-        public AWorld(SpatialGraph initalGraph) : base() {
-            this.gph = initalGraph;
-            this.gens = new List<double[]>();
+        public AWorld()
+            : base() {
+                this.initialized = false;
+        }
+        public AWorld(SpatialGraph initalGraph, double[] initalValues) : base() {
+            this.gph = new SpatialGraph(initalGraph);
+            this.igen = initalValues;
+            this.ClearGens();
+            this.initialized = true;
         }
 
         public double[] LatestGen
@@ -148,17 +162,35 @@ namespace Ants {
             //TODO: figure out how to use this method to successively add generations to a world from outside this class
             // TODO: ensure that there are the same number of values stored in the appended list as there are nodes in this.gph
             double[] ret = new double[vals.Length];
-
             for (int i = 0; i < vals.Length; i++) ret[i] = vals[i];
-
             this.gens.Add(ret);
+        }
+
+        public void ClearGens() {
+            this.gens = new List<double[]>();
+            this.gens.Add(this.igen);
+        }
+
+        public int NodeCount {
+            get { return this.gph.nodes.Count; }
+        }
+
+        public int GenCount {
+            get { return this.gens.Count; }
         }
 
         #region // REQUIRED GH STUFF
 
         public AWorld(AWorld instance)
         {
-            this.gph = instance.gph;
+
+            this.gph = new SpatialGraph(instance.gph);
+            this.igen = instance.igen;
+            this.gens = new List<double[]>();
+            foreach (double[] gen in instance.gens) {
+                this.gens.Add(gen);
+            }
+            this.initialized = true;
         }
         public override IGH_Goo Duplicate() { return new AWorld(this); }
 
@@ -168,9 +200,9 @@ namespace Ants {
         {
             get
             {
+                if (!this.initialized) return false;
+                for (int i = 0; i < gens.Count; i++) if (gens[i].Length != gph.nodes.Count) return false;
                 return true;
-                //if (this.type != MaskType.Invalid) { return true; }
-                //return false;
             }
         }
         public override object ScriptVariable() { return new AWorld(this); }

@@ -18,95 +18,69 @@ namespace Ants {
         public override Guid ComponentGuid { get { return new Guid("{7A7838C0-2EDA-451D-A9CF-973B72247E5E}"); } }
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager) {
-            pManager.Register_StringParam("Script", "Func", "The function to execute", GH_ParamAccess.item);
             pManager.RegisterParam(new GHParam_AWorld(), "AWorld", "W", "The AntsWorld to convert.", GH_ParamAccess.item);
+            pManager.Register_StringParam("Script", "Func", "The function to execute", GH_ParamAccess.item);
             pManager.Register_IntegerParam("Generations", "G", "Number of Generations to create.", 0, GH_ParamAccess.item);
-            pManager.Register_DoubleParam("Value", "Vals", "Initial Values", GH_ParamAccess.list);
             //pManager.Register_IntegerParam("Number of Columns", "N", "Number of Columns", 0, GH_ParamAccess.item);
             //pManager.Register_BooleanParam("Connect Corners", "C", "Connect up the neighbors at corners?", false, GH_ParamAccess.item);
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager) {
-            pManager.Register_DoubleParam("Value", "Val", "The extracted value", GH_ParamAccess.item);
-            pManager.Register_DoubleParam("List", "List", "List of extracted values", GH_ParamAccess.list);
             pManager.RegisterParam(new GHParam_AWorld(), "AWorld", "W", "The resulting AntsWorld.", GH_ParamAccess.item);
         }
 
         protected override void SolveInstance(IGH_DataAccess DA) {
-            string pyString = "";
-            AWorld wrld = new AWorld(new SpatialGraph());
+            AWorld refwrld = new AWorld();
+            if (!DA.GetData(0, ref refwrld) || !refwrld.IsValid) return;
+            AWorld wrld = new AWorld(refwrld);
+
             int nGen = 0;
-
-            int tot = 0;
-
-            List<double> v_list = new List<double>();
-
-            if (!DA.GetData(0, ref pyString)) return;
-            if (!DA.GetData(1, ref wrld)) return;
+            string pyString = "";
+            if (!DA.GetData(1, ref pyString)) return;
             if (!DA.GetData(2, ref nGen)) return;
-            if (!DA.GetDataList(3, v_list)) return;
- 
-
-            tot = wrld.gph.nodes.Count;
+             
             _py = PythonScript.Create();
             _compiled_py = _py.Compile(pyString);
 
             //double d = EvaluateCell();
-            double d = 1.0;
+            //double d = 1.0;
 
             //var t = Type.GetType("IronPython.Runtime.List,IronPython");
             //IList val_list = Activator.CreateInstance(t) as IList;
             //List<double> val_list  = new List<double>();
-            double[] val_list = new double[tot];
-            double[] out_list = new double[tot];
-
-
-            // Sets the initial Generation by using the input v_list
-            // if it runs out of values, it starts over (wraps)
-            int v_i = 0;
-            for (int i = 0; i < tot; i++)
-            {
-                if (v_i == v_list.Count) v_i = 0;
-                val_list[i] = v_list[v_i];
-                v_i++;
-            }
-
-            wrld.AddGen(val_list);
+            //int tot = wrld.gph.nodes.Count;
+            //double[] val_list = new double[tot];
 
             // Main evaluation cycle
             // Should move code into the Antsworld Class
 
             for (int g = 0; g < nGen; g++)
             {
-                double[] new_list = new double[tot];
-                double[] cur_list = new double[tot];
-
+                
+                //double[] cur_list = new double[tot];
                 //cur_list = wrld.gens[g];
-                cur_list = val_list;
+                //cur_list = val_list;
 
-                for (int i = 0; i < tot; i++)
+                double[] new_vals = new double[wrld.NodeCount];
+                for (int i = 0; i < wrld.NodeCount; i++)
                 {
-                    int[] n_i = wrld.gph.NeighboringIndexesOf(i);
-                    List<double> n_vals = new List<double>();
+                    int[] neighboring_indices = wrld.gph.NeighboringIndexesOf(i);
+                    List<double> neighboring_vals = new List<double>();
 
                     // build list of neighboring values
-                    for (int k = 0; k < n_i.Length; k++) n_vals.Add(cur_list[n_i[k]]);
+                    for (int k = 0; k < neighboring_indices.Length; k++) neighboring_vals.Add(wrld.LatestGen[k]);
 
-                    d = EvaluateCell(cur_list[i], n_vals);
+                    //double d = EvaluateCell(wrld.LatestGen[i], neighboring_vals);
+                    double d = g + i + 0.0;
 
-                    new_list[i] = d;
-
+                    new_vals[i] = d;
                 }
-
-                wrld.AddGen(new_list);
-                out_list = cur_list;
-                for (int i = 0; i < new_list.Length; i++) val_list[i] = new_list[i];
+                wrld.AddGen(new_vals);
+                //for (int i = 0; i < new_list.Length; i++) val_list[i] = new_list[i];
 
             }
 
-            DA.SetData(0, wrld.gens.Count);
-            DA.SetDataList(1,out_list);
-            DA.SetData(2, wrld);
+            DA.SetData(0, wrld);
 
             //}
         }
@@ -138,11 +112,3 @@ namespace Ants {
 
 
 }
-
-
-//List<double> val_list = new List<double>();
-
-//for (int i = 0; i < tot; i++)
-//{
-//    val_list.Add(i);
-//}
