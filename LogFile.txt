@@ -1,0 +1,4 @@
+03.16.2014 [Ned]
+Created a way to order the nodes in GraphbyGrid.
+Confirmed that example Life code works by testing with Blinker object [0,0,0,1,1,1,0,0,0]
+

@@ -111,7 +111,18 @@ namespace Ants {
         public static SpatialGraph GraphFromGrid(int mCount, int nCount, bool cnrs)
         {
             SpatialGraph gph = new SpatialGraph();
+            int fromIdx = 0;
 
+            // Create the nodes first so that their indices are orderly: 0,1,2,...
+            for (int m = 0; m < mCount; m++)
+                for (int n = 0; n < nCount; n++)
+                {
+                    gph.nodes.Add(new Point3d(n, m, 0));
+                    fromIdx = gph.nodes.Count - 1;
+                    gph.edges.Add(fromIdx, new List<int>());
+                }
+
+            // Now add edges.
             for (int m = 0; m < mCount; m++)
                 for (int n = 0; n < nCount; n++)
                 {

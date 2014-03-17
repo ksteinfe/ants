@@ -136,7 +136,8 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>Copy "$(TargetPath)" "$(TargetDir)$(ProjectName).gha"
-Copy "$(TargetPath)" "$(GrasshopperDir)$(ProjectName).gha"</PostBuildEvent>
+Copy "$(TargetPath)" "$(GrasshopperDir)$(ProjectName).gha"
+</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
