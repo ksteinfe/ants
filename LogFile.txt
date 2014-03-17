@@ -2,3 +2,15 @@
 Created a way to order the nodes in GraphbyGrid.
 Confirmed that example Life code works by testing with Blinker object [0,0,0,1,1,1,0,0,0]
 
+03.17.2014 [Ned]
+Design Notes/Suggestions:
+
+The SpatialGraph class should have a property Node_Vals to contain the initial values associated with each node. This would allow
+the tools for constructing graph objects (byPoint, byGrid, byEdge, byPoly, etc) and the tools for visualization (toPoints, toEndges, etc) to work outside
+the context of the CA (AntWorld) and therefore these components might be more generalizable.
+The CA components would "translate" to and from SpatialGraphs: Antworld would take in a graph, read the initial conditions from
+the Node_Vals list, and create an AntWorld object with all the generations. GenVals would take an Antworld object, select a generation,
+and insert that generation's values into the Node_Vals prop of a graph, passing a SpatialGraph downstream to the graph visualization tools.
+
+
+
