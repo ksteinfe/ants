@@ -14,23 +14,26 @@ namespace Ants {
         public List<Point3d> nodes;
         public Dictionary<int, List<int>> edges;
         public Dictionary<Tuple<int, int>, double> weights;
-        public int edgeCount;
+        //public int edgeCount;
 
         public SpatialGraph()
         {
             this.nodes = new List<Point3d>();
             this.edges = new Dictionary<int, List<int>>();
             this.weights = new Dictionary<Tuple<int, int>, double>();
-            this.edgeCount = 0;
         }
         public SpatialGraph(SpatialGraph instance) {
             this.nodes = new List<Point3d>(instance.nodes);
             this.edges = new Dictionary<int, List<int>>(instance.edges);
             this.weights = new Dictionary<Tuple<int, int>, double>(instance.weights);
-            this.edgeCount = instance.edgeCount;
-        } 
+        }
 
-        public void AddEdge(Point3d fromPt, Point3d toPt, double weight=1.0){
+        public int EdgeCount
+        {
+            get { return this.weights.Count; }
+        }
+
+        public bool AddEdge(Point3d fromPt, Point3d toPt, double weight=1.0){
             // Point3d should work okay as a dictionary key, but we may need to override Equals and GetHashCode in a child of Point3d class instead, as per http://stackoverflow.com/questions/3545237/c-sharp-object-as-dictionary-key-problem
             int fromIdx = -1;
             int toIdx = -1;
@@ -48,14 +51,26 @@ namespace Ants {
                 toIdx = nodes.Count -1;
                 this.edges.Add(toIdx, new List<int>());
             }
-            
-            // ensure that edge does not already exist, and add edge if not
-            if (!this.edges[fromIdx].Contains(toIdx) && !this.edges[toIdx].Contains(fromIdx)) this.edgeCount++;
-            if (!this.edges[fromIdx].Contains(toIdx)) this.edges[fromIdx].Add(toIdx);
-            if (!this.edges[toIdx].Contains(fromIdx)) this.edges[toIdx].Add(fromIdx);
 
-            this.weights[new Tuple<int, int>(fromIdx, toIdx)] = weight;
-            this.weights[new Tuple<int, int>(toIdx, fromIdx)] = weight;
+            if (fromIdx == toIdx) return false;
+            if ((fromIdx < 0) || (toIdx < 0)) return false;
+
+            //if (!this.edges[fromIdx].Contains(toIdx) && !this.edges[toIdx].Contains(fromIdx)) this.edgeCount++;
+            if (!this.edges[fromIdx].Contains(toIdx))
+            {
+                this.edges[fromIdx].Add(toIdx);
+                this.edges[fromIdx].Sort();
+            }
+            if (!this.edges[toIdx].Contains(fromIdx))
+            {
+                this.edges[toIdx].Add(fromIdx);
+                this.edges[toIdx].Sort();
+            }
+
+            if (fromIdx < toIdx) this.weights[new Tuple<int, int>(fromIdx, toIdx)] = weight;
+            else this.weights[new Tuple<int, int>(toIdx, fromIdx)] = weight;
+
+            return true;
         }
 
         public Point3d[] NeighboringPointsOf(int nodeIdx)
@@ -137,10 +152,86 @@ namespace Ants {
             return gph;
         }
 
+
+        #region // SERIALIZATION
+        public bool Write(GH_IO.Serialization.GH_IWriter writer)
+        {
+            /*
+            public List<Point3d> nodes;
+            public Dictionary<int, List<int>> edges;
+            public Dictionary<Tuple<int, int>, double> weights;
+            public int edgeCount;
+             */
+            List<String> nodestrings = new List<string>();
+            foreach (Point3d pt in this.nodes) nodestrings.Add(pt.X.ToString() + "," + pt.Y.ToString() + "," + pt.Z.ToString());
+            writer.SetString("nodes", string.Join(";", nodestrings));
+
+            List<String> edgestrings = new List<string>();
+            foreach (KeyValuePair<int, List<int>> entry in this.edges) edgestrings.Add(entry.Key.ToString() + ":" + string.Join(",", entry.Value));
+            writer.SetString("edges", string.Join(";", edgestrings));
+
+            List<String> weightstrings = new List<string>();
+            foreach (KeyValuePair<Tuple<int, int>, double> entry in this.weights) weightstrings.Add(entry.Key.Item1 + "," + entry.Key.Item2 + ":" + entry.Value);
+            writer.SetString("weights", string.Join(";", weightstrings));
+            
+
+            return true;
+        }
+
+        public bool Read(GH_IO.Serialization.GH_IReader reader)
+        {
+
+            string nodestring = "";
+            string edgestring = "";
+            string weightstring = "";
+            if (!reader.TryGetString("nodes", ref nodestring) || !reader.TryGetString("edges", ref edgestring) || !reader.TryGetString("weights", ref weightstring)) return false;
+            try
+            {
+                string[] nodestringArr = nodestring.Split(';');
+                this.nodes = new List<Point3d>();
+                foreach (String ptstring in nodestringArr)
+                {
+                    string[] coords = ptstring.Split(',');
+                    if (coords.Length != 3) return false;
+                    this.nodes.Add(new Point3d(double.Parse(coords[0]),double.Parse(coords[1]),double.Parse(coords[2])));
+                }
+
+                string[] edgestringArr = edgestring.Split(';');
+                this.edges = new Dictionary<int, List<int>>();
+                foreach (String estring in edgestringArr)
+                {
+                    string[] keyvalstr = estring.Split(':');
+                    int from = int.Parse(keyvalstr[0]);
+                    List<int> to = new List<int>();
+                    foreach (String tostr in keyvalstr[1].Split(',')) to.Add(int.Parse(tostr));
+                    this.edges[from] = to;
+                }
+
+                string[] weightstringArr = weightstring.Split(';');
+                this.weights = new Dictionary<Tuple<int, int>, double>();
+                foreach (String wstring in weightstringArr)
+                {
+                    string[] keyvalstr = wstring.Split(':');
+                    string[] keystr = keyvalstr[0].Split(',');
+                    Tuple<int, int> key = new Tuple<int, int>(int.Parse(keystr[0]), int.Parse(keystr[1]));
+                    double value = double.Parse(keyvalstr[1]);
+                    this.weights[key] = value;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+            
+            return true;
+        }
+
+
+        #endregion
     }
 
 
-    public class AWorld : GH_Goo<object>
+    public class AWorld : GH_Goo<object>, GH_IO.GH_ISerializable
     {
         public SpatialGraph gph;
         // a list of arrays of doubles. 
@@ -219,7 +310,7 @@ namespace Ants {
         public override object ScriptVariable() { return new AWorld(this); }
         public override string ToString()
         {
-            return String.Format("I am an Ants World.\n I have {0} nodes in my graph, {1} connections, and {2} generations of history. What else would you like to know?", this.gph.nodes.Count, this.gph.edgeCount, this.gens.Count);
+            return String.Format("I am an Ants World.\n I have {0} nodes in my graph, {1} connections, and {2} generations of history. What else would you like to know?", this.gph.nodes.Count, this.gph.EdgeCount, this.gens.Count);
         }
         public override string TypeDescription { get { return "Represents an Ants Graph"; } }
         public override string TypeName { get { return "Ants Graph"; } }
@@ -243,12 +334,74 @@ namespace Ants {
             return false;
         }
 
+        public override bool Write(GH_IO.Serialization.GH_IWriter writer)
+        {
+            /*
+            public SpatialGraph gph;
+            public List<double []> gens;
+            public double[] igen;
+            public bool initialized;
+             */
+            //writer.SetString("GenCount", this.GenCount.ToString());
+
+            List<String> genstrings = new List<string>();
+            foreach (double[] gen in gens) genstrings.Add(string.Join(",", gen));
+            writer.SetString("gens", string.Join(";", genstrings));
+            
+            writer.SetString("igen", string.Join(",", this.igen));
+
+            if (!this.gph.Write(writer)) return false;
+
+            return base.Write(writer);
+        }
+        public override bool Read(GH_IO.Serialization.GH_IReader reader)
+        {
+
+            string igenstring = "";
+            string genstrings = "";
+            if (!reader.TryGetString("igen", ref igenstring) || !reader.TryGetString("gens", ref genstrings)) return false;
+            try
+            {
+                string[] igenstringArr = igenstring.Split(',');
+                if (igenstringArr.Length == 0) return false;
+                this.igen = new double[igenstringArr.Length];
+                for (int i = 0; i < igenstringArr.Length; i++) igen[i] = (double.Parse(igenstringArr[i]));
+
+                string[] genstringsArr = genstrings.Split(';');
+                if (genstringsArr.Length == 0) return false;
+                this.gens = new List<double[]>();
+                foreach (String genstring in genstringsArr){
+                    string[] genstringArr = genstring.Split(',');
+                    if (genstringArr.Length == 0) return false;
+                    double[] gen = new double[genstringArr.Length];
+                    for (int i = 0; i < genstringArr.Length; i++) gen[i] = (double.Parse(genstringArr[i]));
+                    this.gens.Add(gen);
+                }
+            }
+            catch
+            {
+                return false;
+            }
+
+            this.gph = new SpatialGraph();
+            if (!this.gph.Read(reader)) return false;
+
+            this.initialized = true;
+            return base.Read(reader);
+        }
+
+
+
+
+
+
+
 
         #endregion
 
     }
 
-    public class GHParam_AWorld : GH_Param<AWorld>
+    public class GHParam_AWorld : GH_PersistentParam<AWorld>
     {
         public GHParam_AWorld()
             : base(new GH_InstanceDescription("Ants World", "AWorld", "Stores a graph of nodes and connections, and a history of values for each node for a given number of timesteps", "Ants", "Worlds"))
@@ -256,6 +409,16 @@ namespace Ants {
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override System.Guid ComponentGuid { get { return new Guid("{4657FAD6-4F6E-4FCA-8CAC-9B32669B5451}"); } }
         //protected override Bitmap Icon { get { return DYear.Properties.Resources.Icons_Param_YearMask; } }
+
+        protected override GH_GetterResult Prompt_Singular(ref AWorld value)
+        {
+            return GH_GetterResult.cancel;
+        }
+        protected override GH_GetterResult Prompt_Plural(ref List<AWorld> values)
+        {
+            return GH_GetterResult.cancel;
+        }
+
     }
 
 }
