@@ -13,4 +13,11 @@ the Node_Vals list, and create an AntWorld object with all the generations. GenV
 and insert that generation's values into the Node_Vals prop of a graph, passing a SpatialGraph downstream to the graph visualization tools.
 
 
+03.23.2014 [Ned]
+Modified SpatialGraph as a stand-alone entity, with required GH machinery (I think). Reogranized components into Graph-related ("Graphs") 
+and Ants-related ("Worlds") and modified input and output parameters. Graphs can be used independently from AntWorlds now.
+Reworked GH testing scripts to work with new component topology. All seems to work.
+
+
+
 

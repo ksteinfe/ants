@@ -16,13 +16,14 @@ namespace Ants {
 
         public AntsEngineByFunction()
             //Call the base constructor
-            : base("Ants Compoent", "Ants", "Blah", "Ants", "Engine") { }
+            : base("Ants Compoent", "Ants", "Blah", "Ants", "Worlds") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{7A7838C0-2EDA-451D-A9CF-973B72247E5E}"); } }
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager) {
-            pManager.RegisterParam(new GHParam_AWorld(), "AWorld", "W", "The AntsWorld to convert.", GH_ParamAccess.item);
+            pManager.RegisterParam(new GHParam_SpatialGraph(), "Spatial Graph", "S", "The Spatial Graph.", GH_ParamAccess.item);
             pManager.Register_StringParam("Script", "Func", "The function to execute", GH_ParamAccess.item);
+            pManager.Register_DoubleParam("Value", "V", "Initial Values", GH_ParamAccess.list);
             pManager.Register_IntegerParam("Generations", "G", "Number of Generations to create.", 0, GH_ParamAccess.item);
         }
 
@@ -33,13 +34,33 @@ namespace Ants {
 
         protected override void SolveInstance(IGH_DataAccess DA) {
             AWorld refwrld = new AWorld();
-            if (!DA.GetData(0, ref refwrld) || !refwrld.IsValid) return;
-            AWorld wrld = new AWorld(refwrld);
+            List<double> v_list = new List<double>();
+
+            //if (!DA.GetData(0, ref refwrld) || !refwrld.IsValid) return;
+            //AWorld wrld = new AWorld(refwrld);
+
+            SpatialGraph gph = new SpatialGraph();
+            if (!DA.GetData(0, ref gph)) return;
 
             int nGen = 0;
             string pyString = "";
             if (!DA.GetData(1, ref pyString)) return;
-            if (!DA.GetData(2, ref nGen)) return;
+            if (!DA.GetDataList(2, v_list)) return;
+            if (!DA.GetData(3, ref nGen)) return;
+
+
+            // Sets the initial Generation by using the input v_list
+            // if it runs out of values, it starts over (wraps)
+            double[] val_list = new double[gph.nodes.Count];
+            int v_i = 0;
+            for (int i = 0; i < gph.nodes.Count; i++)
+            {
+                if (v_i == v_list.Count) v_i = 0;
+                val_list[i] = v_list[v_i];
+                v_i++;
+            }
+
+            AWorld wrld = new AWorld(gph, val_list);
 
             _py = PythonScript.Create();
             _py.Output = this.m_py_output.Write;
@@ -52,7 +73,6 @@ namespace Ants {
             // Should move code into the Antsworld Class
             for (int g = 0; g < nGen; g++)
             {
-
                 // console out
                 this.m_py_output.Reset();
 
@@ -124,8 +144,6 @@ namespace Ants {
             sw.Write(error);
         }
     }
-
-
 
 
     /// <summary>
