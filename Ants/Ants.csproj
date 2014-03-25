@@ -8,7 +8,7 @@
     <ProjectGuid>{8955361B-7612-44DE-9B12-C081EC8C6F2E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DcPython</RootNamespace>
+    <RootNamespace>Ants</RootNamespace>
     <AssemblyName>Ants</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -126,7 +126,20 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\Ants_Icons_graph_to_lines.png" />
+    <None Include="Resources\Ants_Icons_graph_to_points.png" />
+    <None Include="Resources\Ants_Icons_points_to_graph.png" />
+    <None Include="Resources\Ants_Icons_graph_by_grid.png" />
+    <None Include="Resources\Ants_Icons_graph_by_points.png" />
+    <None Include="Resources\Ants_Icons_graph_by_lines.png" />
+    <None Include="Resources\Ants_Icons_ant_world.png" />
+    <None Include="Resources\Ants_Icons_ant_select.png" />
+    <None Include="Resources\Ants_Icons_Param_AntWorld.png" />
+    <None Include="Resources\SpatialGraph.bmp" />
+    <None Include="Resources\Ants_Icons_Param_SpatialGraph.ico" />
+    <Content Include="Resources\Ants_Icons_Param_SpatialGraph.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -138,7 +151,7 @@
   <PropertyGroup>
     <PostBuildEvent>Copy "$(TargetPath)" "$(TargetDir)$(ProjectName).gha"
 Copy "$(TargetPath)" "$(GrasshopperDir)$(ProjectName).gha"
-</PostBuildEvent>
+Copy "$(TargetPath)" "C:\Users\Ned Reifenstein\AppData\Roaming\Grasshopper\Libraries\$(ProjectName).gha"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

@@ -117,4 +117,35 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Ants_Icons_ant_select" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ants_Icons_ant_select.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Ants_Icons_ant_world" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ants_Icons_ant_world.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Ants_Icons_graph_by_grid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ants_Icons_graph_by_grid.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Ants_Icons_graph_by_lines" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ants_Icons_graph_by_lines.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Ants_Icons_graph_by_points" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ants_Icons_graph_by_points.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Ants_Icons_graph_to_lines" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ants_Icons_graph_to_lines.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Ants_Icons_graph_to_points" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ants_Icons_graph_to_points.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Ants_Icons_Param_AntWorld" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ants_Icons_Param_AntWorld.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Ants_Icons_Param_SpatialGraph" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ants_Icons_Param_SpatialGraph.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Ants_Icons_Param_SpatialGraph1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\ants_icons_param_spatialgraph.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

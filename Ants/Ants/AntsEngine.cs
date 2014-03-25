@@ -1,6 +1,7 @@
 ﻿using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
 using System;
+using System.Drawing;
 using Rhino;
 using Rhino.Runtime;
 using System.Collections;
@@ -16,9 +17,11 @@ namespace Ants {
 
         public AntsEngineByFunction()
             //Call the base constructor
-            : base("Ants Compoent", "Ants", "Blah", "Ants", "Worlds") { }
+            : base("Ants Component", "Ants", "Blah", "Ants", "Worlds") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{7A7838C0-2EDA-451D-A9CF-973B72247E5E}"); } }
+
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_ant_world; } }
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager) {
             pManager.RegisterParam(new GHParam_SpatialGraph(), "Spatial Graph", "S", "The Spatial Graph.", GH_ParamAccess.item);

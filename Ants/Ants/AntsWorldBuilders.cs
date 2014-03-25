@@ -1,6 +1,7 @@
 ﻿using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
 using System;
+using System.Drawing;
 using Rhino;
 using Rhino.Runtime;
 using Rhino.Geometry;
@@ -16,6 +17,9 @@ namespace Ants {
             : base("Create Graph of a Grid", "GraphByGrid", "Creates a Spatial Graph that looks like a regular grid", "Ants", "Graphs") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{FDCC238D-44C3-4C14-8996-7C753518CF48}"); } }
+
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_grid; } }
+
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
@@ -79,6 +83,9 @@ namespace Ants {
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{6D8C293A-A7FF-4C6C-871A-478DAC246B59}"); } }
 
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_to_lines; } }
+
+
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.RegisterParam(new GHParam_SpatialGraph(), "Spatial Graph", "S", "The Spatial Graph to convert.", GH_ParamAccess.item);
@@ -113,6 +120,9 @@ namespace Ants {
             : base("Graph to Nodes", "GetNodes", "Returns a Spatial Graph as a collection of Nodes.", "Ants", "Graphs") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{CB16E7BA-6327-4A70-B6CD-76ED776861F6}"); } }
+
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_to_points; } }
+
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager) {
             pManager.RegisterParam(new GHParam_SpatialGraph(), "Spatial Graph", "S", "The Spatial Graph to convert.", GH_ParamAccess.item);
@@ -160,7 +170,9 @@ namespace Ants {
             : base("Generation Values", "GenVals", "Returns values for a given AntsWorld generation", "Ants", "Worlds") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{43D5097F-F320-4672-AB69-70A1C541F7AF}"); } }
-        
+
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_ant_select; } }
+
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
@@ -195,6 +207,8 @@ namespace Ants {
             : base("Antworld to Graph", "AWorldToGraph", "Reads a Spatial Graph from an Antworld", "Ants", "Worlds") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{3FE80255-6BF1-45B1-A966-752F59DF7478}"); } }
+
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_ant_world; } }
 
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)

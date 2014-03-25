@@ -1,6 +1,7 @@
 ﻿using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
 using System;
+using System.Drawing;
 using Rhino;
 using Rhino.Runtime;
 using Rhino.Geometry;
@@ -187,7 +188,8 @@ namespace Ants {
         { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override System.Guid ComponentGuid { get { return new Guid("{4657FAD6-4F6E-4FCA-8CAC-9B32669B5451}"); } }
-        //protected override Bitmap Icon { get { return DYear.Properties.Resources.Icons_Param_YearMask; } }
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_Param_AntWorld; } }
+        
 
         protected override GH_GetterResult Prompt_Singular(ref AWorld value)
         {

@@ -1,6 +1,7 @@
 ﻿using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
 using System;
+using System.Drawing;
 using Rhino;
 using Rhino.Runtime;
 using Rhino.Geometry;
@@ -218,7 +219,7 @@ namespace Ants
         }
 
 
-        public bool Write(GH_IO.Serialization.GH_IWriter writer)
+        public override bool Write(GH_IO.Serialization.GH_IWriter writer)
         {
             /*
             public List<Point3d> nodes;
@@ -242,7 +243,7 @@ namespace Ants
             return true;
         }
 
-        public bool Read(GH_IO.Serialization.GH_IReader reader)
+        public override bool Read(GH_IO.Serialization.GH_IReader reader)
         {
 
             string nodestring = "";
@@ -303,7 +304,7 @@ namespace Ants
         public override System.Guid ComponentGuid { get { return new Guid("{7D6E6F46-F68E-4AE2-AF84-32A10E8D79F9}"); } }
 
         
-        //protected override Bitmap Icon { get { return DYear.Properties.Resources.Icons_Param_YearMask; } }
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_Param_SpatialGraph1; } }
 
         protected override GH_GetterResult Prompt_Singular(ref SpatialGraph value)
         {

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DcPython.Properties {
+namespace Ants.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace DcPython.Properties {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DcPython.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Ants.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,106 @@ namespace DcPython.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Ants_Icons_ant_select {
+            get {
+                object obj = ResourceManager.GetObject("Ants_Icons_ant_select", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Ants_Icons_ant_world {
+            get {
+                object obj = ResourceManager.GetObject("Ants_Icons_ant_world", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Ants_Icons_graph_by_grid {
+            get {
+                object obj = ResourceManager.GetObject("Ants_Icons_graph_by_grid", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Ants_Icons_graph_by_lines {
+            get {
+                object obj = ResourceManager.GetObject("Ants_Icons_graph_by_lines", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Ants_Icons_graph_by_points {
+            get {
+                object obj = ResourceManager.GetObject("Ants_Icons_graph_by_points", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Ants_Icons_graph_to_lines {
+            get {
+                object obj = ResourceManager.GetObject("Ants_Icons_graph_to_lines", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Ants_Icons_graph_to_points {
+            get {
+                object obj = ResourceManager.GetObject("Ants_Icons_graph_to_points", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Ants_Icons_Param_AntWorld {
+            get {
+                object obj = ResourceManager.GetObject("Ants_Icons_Param_AntWorld", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon Ants_Icons_Param_SpatialGraph {
+            get {
+                object obj = ResourceManager.GetObject("Ants_Icons_Param_SpatialGraph", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Ants_Icons_Param_SpatialGraph1 {
+            get {
+                object obj = ResourceManager.GetObject("Ants_Icons_Param_SpatialGraph1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }
