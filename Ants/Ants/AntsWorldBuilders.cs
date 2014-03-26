@@ -14,7 +14,7 @@ namespace Ants {
 
         public GraphByGrid()
             //Call the base constructor
-            : base("Create Graph of a Grid", "GraphByGrid", "Creates a Spatial Graph that looks like a regular grid", "Ants", "Graphs") { }
+            : base("Create Graph of a Grid", "GrGph", "Creates a Spatial Graph that looks like a regular grid", "Ants", "Graphs") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{FDCC238D-44C3-4C14-8996-7C753518CF48}"); } }
 
@@ -72,14 +72,53 @@ namespace Ants {
 
     }
 
+    public class GraphByPoints : GH_Component
+    {
 
+        public GraphByPoints()
+            //Call the base constructor
+            : base("Create Graph from Points", "PtsGph", "Creates a Spatial Graph from a set of points and a distance.", "Ants", "Graphs") { }
+        public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
+        public override Guid ComponentGuid { get { return new Guid("{E8892815-CEFA-4F72-9BC1-3E520BF1ED67}"); } }
+
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_points; } }
+
+
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.Register_PointParam("Points", "P", "Points.", GH_ParamAccess.list); 
+            pManager.Register_DoubleParam("Dist", "D", "Distance.", 1.0, GH_ParamAccess.item);
+
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.RegisterParam(new GHParam_SpatialGraph(), "SGraph", "S", "The resulting Spatial Graph.", GH_ParamAccess.item);
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+            double dist = 1.0;
+            List<Point3d> points_in = new List<Point3d>();        
+
+            if (!DA.GetDataList(0, points_in)) return;
+            if (!DA.GetData(1, ref dist)) return;
+
+            SpatialGraph gph = SpatialGraph.GraphFromPoints(points_in, dist);
+
+            DA.SetData(0, gph);
+
+        }
+
+
+    }
 
     public class GraphToEdges : GH_Component
     {
 
         public GraphToEdges()
             //Call the base constructor
-            : base("Graph to Edges", "GraphToEdges", "Converts a Graph object to a network of lines", "Ants", "Graphs") { }
+            : base("Graph to Edges", "GphLn", "Converts a Graph object to a network of lines", "Ants", "Graphs") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{6D8C293A-A7FF-4C6C-871A-478DAC246B59}"); } }
 
@@ -98,7 +137,7 @@ namespace Ants {
 
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            // Since this component does not operate on the AWorld, we can grab it this way instead of creating a copy
+            // OLD: Since this component does not operate on the AWorld, we can grab it this way instead of creating a copy
             //AWorld wrld = new AWorld();
             SpatialGraph gph = new SpatialGraph();
             //if (!DA.GetData(0, ref gph) || !gph.IsValid) return;
@@ -117,7 +156,7 @@ namespace Ants {
 
         public GraphToNodes()
             //Call the base constructor
-            : base("Graph to Nodes", "GetNodes", "Returns a Spatial Graph as a collection of Nodes.", "Ants", "Graphs") { }
+            : base("Graph to Nodes", "GphPts", "Returns a Spatial Graph as a collection of Nodes.", "Ants", "Graphs") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{CB16E7BA-6327-4A70-B6CD-76ED776861F6}"); } }
 
@@ -204,11 +243,11 @@ namespace Ants {
 
         public AWorldToGraph()
             //Call the base constructor
-            : base("Antworld to Graph", "AWorldToGraph", "Reads a Spatial Graph from an Antworld", "Ants", "Worlds") { }
+            : base("Antworld to Graph", "AWGph", "Reads a Spatial Graph from an Antworld", "Ants", "Worlds") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{3FE80255-6BF1-45B1-A966-752F59DF7478}"); } }
 
-        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_ant_world; } }
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_ants_to_graph; } }
 
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
@@ -228,6 +267,7 @@ namespace Ants {
             AWorld wrld = new AWorld(refwrld);
 
             DA.SetData(0, wrld.gph);
+
         }
 
     }

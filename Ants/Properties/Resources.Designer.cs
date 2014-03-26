@@ -83,6 +83,16 @@ namespace Ants.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Ants_Icons_ants_to_graph {
+            get {
+                object obj = ResourceManager.GetObject("Ants_Icons_ants_to_graph", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Ants_Icons_graph_by_grid {
             get {
                 object obj = ResourceManager.GetObject("Ants_Icons_graph_by_grid", resourceCulture);

@@ -166,6 +166,30 @@ namespace Ants
         }
 
 
+        public static SpatialGraph GraphFromPoints(List<Point3d> points_in, double dist)
+        {
+            SpatialGraph gph = new SpatialGraph();
+            int pt_count = points_in.Count;
+            
+
+            // Create the nodes first so that their indices are orderly: 0,1,2,...
+            for (int m = 0; m < pt_count; m++)
+            {
+                gph.nodes.Add(points_in[m]);
+                gph.edges.Add(m, new List<int>());
+            }
+            for (int m = 0; m < pt_count-1; m++)
+                for (int n = m+1; n < pt_count; n++)
+                {
+                    var vec = gph.nodes[m] - gph.nodes[n];
+                    double length = vec.Length;
+                    if (length < dist) gph.AddEdge(gph.nodes[m], gph.nodes[n]);
+                    
+                }
+
+            return gph;
+        }
+
         #region // Required GH Stuff
 
         
@@ -298,7 +322,7 @@ namespace Ants
     public class GHParam_SpatialGraph : GH_PersistentParam<SpatialGraph>
     {
         public GHParam_SpatialGraph()
-            : base(new GH_InstanceDescription("Spatial Graph", "SGraph", "Stores a graph of nodes and connections", "Ants", "Graphs"))
+            : base(new GH_InstanceDescription("Spatial Graph", "SG", "Stores a graph of nodes and connections", "Ants", "Graphs"))
         { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override System.Guid ComponentGuid { get { return new Guid("{7D6E6F46-F68E-4AE2-AF84-32A10E8D79F9}"); } }

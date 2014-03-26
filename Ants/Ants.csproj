@@ -133,11 +133,12 @@
     <None Include="Resources\Ants_Icons_graph_by_grid.png" />
     <None Include="Resources\Ants_Icons_graph_by_points.png" />
     <None Include="Resources\Ants_Icons_graph_by_lines.png" />
-    <None Include="Resources\Ants_Icons_ant_world.png" />
-    <None Include="Resources\Ants_Icons_ant_select.png" />
     <None Include="Resources\Ants_Icons_Param_AntWorld.png" />
     <None Include="Resources\SpatialGraph.bmp" />
     <None Include="Resources\Ants_Icons_Param_SpatialGraph.ico" />
+    <None Include="Resources\Ants_Icons_ant_select.png" />
+    <None Include="Resources\Ants_Icons_ant_world.png" />
+    <None Include="Resources\Ants_Icons_ants_to_graph.png" />
     <Content Include="Resources\Ants_Icons_Param_SpatialGraph.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

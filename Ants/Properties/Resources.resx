@@ -148,4 +148,7 @@
   <data name="Ants_Icons_Param_SpatialGraph1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\ants_icons_param_spatialgraph.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Ants_Icons_ants_to_graph" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ants_Icons_ants_to_graph.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>
