@@ -26,12 +26,6 @@ namespace Ants
             this.initialized = false;
         }
 
-        //public SpatialGraph(SpatialGraph instance) : base() {
-        //    this.nodes = new List<Point3d>(instance.nodes);
-        //    this.edges = new Dictionary<int, List<int>>(instance.edges);
-        //    this.weights = new Dictionary<Tuple<int, int>, double>(instance.weights);
-        //    this.initialized = true;
-        //}
 
         public int EdgeCount
         {
@@ -183,7 +177,7 @@ namespace Ants
                 {
                     var vec = gph.nodes[m] - gph.nodes[n];
                     double length = vec.Length;
-                    if (length < dist) gph.AddEdge(gph.nodes[m], gph.nodes[n]);
+                    if (length < dist) gph.AddEdge(gph.nodes[m], gph.nodes[n], length);
                     
                 }
 

@@ -105,12 +105,8 @@ namespace Ants {
 
             }
 
-
             DA.SetDataTree(0, consoleOut);
             DA.SetData(1, wrld);
-
-           
-
 
         }
 

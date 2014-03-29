@@ -199,6 +199,54 @@ namespace Ants {
 
     }
 
+    public class GraphExplorer : GH_Component
+    {
+
+        public GraphExplorer()
+            //Call the base constructor
+            : base("Graph Explorer", "GphExp", "Explore a Graph.", "Ants", "Graphs") { }
+        public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
+        public override Guid ComponentGuid { get { return new Guid("{EFD017FD-8EB6-4074-AE5B-82B7C6D9E523}"); } }
+
+        //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_to_points; } }
+
+
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.RegisterParam(new GHParam_SpatialGraph(), "Spatial Graph", "S", "The Spatial Graph to convert.", GH_ParamAccess.item);
+            pManager.Register_IntegerParam("Index of Node", "I", "Index of Node to Explore.", 0, GH_ParamAccess.item);
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.Register_PointParam("Points", "P", "Node position.", GH_ParamAccess.item);
+            pManager.Register_IntegerParam("Neighbors", "N", "Neighbor Indices.", GH_ParamAccess.list);
+            pManager.Register_DoubleParam("Weights", "W", "Edge Weights.", GH_ParamAccess.list);
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+            SpatialGraph gph = new SpatialGraph();
+            int indx = 0;
+
+            if (!DA.GetData(0, ref gph)) return;
+            if (!DA.GetData(1, ref indx)) return;
+
+            if (indx > gph.nodes.Count - 1) indx = 0;
+
+            GH_Point ghPoint = new GH_Point(gph.nodes[indx]);
+            int[] neighbors =gph.NeighboringIndexesOf(indx);
+            double[] weights = gph.NeighboringWeightsOf(indx);
+
+            DA.SetData(0,ghPoint);
+            DA.SetDataList(1, neighbors);
+            DA.SetDataList(2, weights);
+
+
+        }
+
+    }
+
 
 
     public class AWorldGenVals : GH_Component
