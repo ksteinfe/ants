@@ -98,13 +98,24 @@ namespace Ants
             return this.edges[nodeIdx].ToArray();
         }
 
+        public double GetWeight(int node1, int node2)
+        {
+            if (node1 < node2) {
+                return this.weights[new Tuple<int, int>(node1, node2)];
+            }
+            else {
+                return this.weights[new Tuple<int, int>(node2, node1)];
+            }
+        }
+
         public double[] NeighboringWeightsOf(int nodeIdx)
         {
             int[] nidxs = NeighboringIndexesOf(nodeIdx);
             double[] ret = new double[nidxs.Length];
             for (int i = 0; i < nidxs.Length; i++)
             {
-                ret[i] = this.weights[new Tuple<int, int>(nodeIdx, nidxs[i])];
+                //ret[i] = this.weights[new Tuple<int, int>(nodeIdx, nidxs[i])];
+                ret[i] = this.GetWeight(nodeIdx, nidxs[i]);
             }
             return ret;
         }
@@ -177,8 +188,11 @@ namespace Ants
                 {
                     var vec = gph.nodes[m] - gph.nodes[n];
                     double length = vec.Length;
-                    if (length < dist) gph.AddEdge(gph.nodes[m], gph.nodes[n], length);
-                    
+                    if (length < dist)
+                    {
+                        gph.AddEdge(gph.nodes[m], gph.nodes[n], length);
+                        //gph.AddEdge(gph.nodes[n], gph.nodes[m], length);
+                    }
                 }
 
             return gph;

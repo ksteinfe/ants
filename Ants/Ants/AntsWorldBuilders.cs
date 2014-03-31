@@ -137,8 +137,6 @@ namespace Ants {
 
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            // OLD: Since this component does not operate on the AWorld, we can grab it this way instead of creating a copy
-            //AWorld wrld = new AWorld();
             SpatialGraph gph = new SpatialGraph();
             //if (!DA.GetData(0, ref gph) || !gph.IsValid) return;
             if (!DA.GetData(0, ref gph)) return;
@@ -221,7 +219,9 @@ namespace Ants {
         {
             pManager.Register_PointParam("Points", "P", "Node position.", GH_ParamAccess.item);
             pManager.Register_IntegerParam("Neighbors", "N", "Neighbor Indices.", GH_ParamAccess.list);
+            pManager.Register_LineParam("Edges", "E", "Neighboring Edges", GH_ParamAccess.list);
             pManager.Register_DoubleParam("Weights", "W", "Edge Weights.", GH_ParamAccess.list);
+            
         }
 
         protected override void SolveInstance(IGH_DataAccess DA)
@@ -238,9 +238,16 @@ namespace Ants {
             int[] neighbors =gph.NeighboringIndexesOf(indx);
             double[] weights = gph.NeighboringWeightsOf(indx);
 
+            List<Line> lines = gph.EdgesToLines();
+            List<GH_Line> ghLines = new List<GH_Line>();
+
+            foreach (int neighbor in neighbors) ghLines.Add(new GH_Line(new Line(gph.nodes[indx], gph.nodes[neighbor])));
+
+
             DA.SetData(0,ghPoint);
             DA.SetDataList(1, neighbors);
-            DA.SetDataList(2, weights);
+            DA.SetDataList(2, ghLines);
+            DA.SetDataList(3, weights);
 
 
         }
