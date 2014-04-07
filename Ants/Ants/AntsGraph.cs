@@ -170,7 +170,6 @@ namespace Ants
             return gph;
         }
 
-
         public static SpatialGraph GraphFromPoints(List<Point3d> points_in, double dist)
         {
             SpatialGraph gph = new SpatialGraph();
@@ -194,6 +193,46 @@ namespace Ants
                         //gph.AddEdge(gph.nodes[n], gph.nodes[m], length);
                     }
                 }
+
+            return gph;
+        }
+
+        public static SpatialGraph GraphFromCurves(List<Curve> curves_in)
+        {
+            // Note: at the moment, assumes closed curves that are more or less polygonal
+            SpatialGraph gph = new SpatialGraph();
+            int count = curves_in.Count;
+
+            const double intersection_tolerance = 0.001;
+            const double overlap_tolerance = 0.0;
+
+            for (int m = 0; m < count - 1; m++)
+                for (int n = m + 1; n < count; n++)
+                {
+                    // from http://wiki.mcneel.com/developer/rhinocommonsamples/intersectcurves
+                    var events = Rhino.Geometry.Intersect.Intersection.CurveCurve(curves_in[m], curves_in[n], intersection_tolerance, overlap_tolerance);
+
+                    if (events != null)
+                        if (events.Count > 0)
+                        {
+                            BoundingBox b1 = curves_in[m].GetBoundingBox(false);
+                            BoundingBox b2 = curves_in[n].GetBoundingBox(false);
+                            Point3d p1 = b1.Center;
+                            Point3d p2 = b2.Center;
+                            var vec = p1 - p2;
+                            double length = vec.Length;
+                            gph.AddEdge(p1, p2, length);
+                        }
+                    }
+            return gph;
+        }
+
+        public static SpatialGraph GraphFromLines(List<Line> lines_in)
+        {
+            SpatialGraph gph = new SpatialGraph();
+
+            foreach (Line ln in lines_in)
+                gph.AddEdge(ln.From, ln.To, ln.Length);
 
             return gph;
         }

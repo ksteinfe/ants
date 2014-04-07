@@ -113,6 +113,81 @@ namespace Ants {
 
     }
 
+    public class GraphByLines : GH_Component
+    {
+
+        public GraphByLines()
+            //Call the base constructor
+            : base("Create Graph from Lines", "LnsGph", "Creates a Spatial Graph from a set of lines.", "Ants", "Graphs") { }
+        public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
+        public override Guid ComponentGuid { get { return new Guid("{4B2CA66B-20BB-49E4-9420-0BF618F770E2}"); } }
+
+        //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_points; } }
+
+
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.Register_LineParam("Lines", "L", "Lines.", GH_ParamAccess.list);
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.RegisterParam(new GHParam_SpatialGraph(), "SGraph", "S", "The resulting Spatial Graph.", GH_ParamAccess.item);
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+            List<Line> lines_in = new List<Line>();
+
+            if (!DA.GetDataList(0, lines_in)) return;
+
+            SpatialGraph gph = SpatialGraph.GraphFromLines(lines_in);
+
+            DA.SetData(0, gph);
+
+        }
+
+
+    }
+
+    public class GraphByCurve : GH_Component
+    {
+
+        public GraphByCurve()
+            //Call the base constructor
+            : base("Create Graph from Curves", "CrvGph", "Creates a Spatial Graph from a set of Curves.", "Ants", "Graphs") { }
+        public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
+        public override Guid ComponentGuid { get { return new Guid("{2740EF67-789D-44CE-B104-A78DD1316F19}"); } }
+
+        //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_points; } }
+
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.Register_CurveParam("Curves", "C", "Curves.", GH_ParamAccess.list);
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.RegisterParam(new GHParam_SpatialGraph(), "SGraph", "S", "The resulting Spatial Graph.", GH_ParamAccess.item);
+            //pManager.Register_BooleanParam("Bool","B","Boolean", GH_ParamAccess.item);
+            //pManager.Register_IntegerParam("int", "I", "Int", GH_ParamAccess.item);
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+            List<Curve> curves_in = new List<Curve>();
+
+            if (!DA.GetDataList(0, curves_in)) return;
+
+            SpatialGraph gph = SpatialGraph.GraphFromCurves(curves_in);
+
+            DA.SetData(0, gph);
+
+        }
+
+
+    }
+
     public class GraphToEdges : GH_Component
     {
 
@@ -128,6 +203,7 @@ namespace Ants {
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.RegisterParam(new GHParam_SpatialGraph(), "Spatial Graph", "S", "The Spatial Graph to convert.", GH_ParamAccess.item);
+
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
@@ -253,8 +329,6 @@ namespace Ants {
         }
 
     }
-
-
 
     public class AWorldGenVals : GH_Component
     {
