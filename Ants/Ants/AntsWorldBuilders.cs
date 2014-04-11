@@ -164,22 +164,23 @@ namespace Ants {
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.Register_CurveParam("Curves", "C", "Curves.", GH_ParamAccess.list);
+            pManager.Register_BooleanParam("Connect Corners", "P", "Connect up the neighbors at corners?", false, GH_ParamAccess.item);
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.RegisterParam(new GHParam_SpatialGraph(), "SGraph", "S", "The resulting Spatial Graph.", GH_ParamAccess.item);
-            //pManager.Register_BooleanParam("Bool","B","Boolean", GH_ParamAccess.item);
-            //pManager.Register_IntegerParam("int", "I", "Int", GH_ParamAccess.item);
         }
 
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             List<Curve> curves_in = new List<Curve>();
+            bool cnrs = true;
 
             if (!DA.GetDataList(0, curves_in)) return;
+            if (!DA.GetData(1, ref cnrs)) return;
 
-            SpatialGraph gph = SpatialGraph.GraphFromCurves(curves_in);
+            SpatialGraph gph = SpatialGraph.GraphFromCurves(curves_in, cnrs);
 
             DA.SetData(0, gph);
 

@@ -197,7 +197,7 @@ namespace Ants
             return gph;
         }
 
-        public static SpatialGraph GraphFromCurves(List<Curve> curves_in)
+        public static SpatialGraph GraphFromCurves(List<Curve> curves_in, bool cnrs = true)
         {
             // Note: at the moment, assumes closed curves that are more or less polygonal
             SpatialGraph gph = new SpatialGraph();
@@ -213,7 +213,8 @@ namespace Ants
                     var events = Rhino.Geometry.Intersect.Intersection.CurveCurve(curves_in[m], curves_in[n], intersection_tolerance, overlap_tolerance);
 
                     if (events != null)
-                        if (events.Count > 0)
+                        // might do more intersection checking in the future
+                        if ((events.Count > 1) || ((events.Count == 1) && (cnrs || !events[0].IsPoint)))
                         {
                             BoundingBox b1 = curves_in[m].GetBoundingBox(false);
                             BoundingBox b2 = curves_in[n].GetBoundingBox(false);
@@ -250,8 +251,6 @@ namespace Ants
         }
 
         public override IGH_Goo Duplicate() { return new SpatialGraph(this); }
-
-        
 
         public override bool IsValid
         {
