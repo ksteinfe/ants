@@ -150,12 +150,12 @@ namespace Ants {
 
     }
 
-    public class GraphByCurve : GH_Component
+    public class GraphByShapes : GH_Component
     {
 
-        public GraphByCurve()
+        public GraphByShapes()
             //Call the base constructor
-            : base("Create Graph from Curves", "CrvGph", "Creates a Spatial Graph from a set of Curves.", "Ants", "Graphs") { }
+            : base("Create Graph from Shapes", "CrvShp", "Creates a Spatial Graph from a set of Shapes (Curves).", "Ants", "Graphs") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{2740EF67-789D-44CE-B104-A78DD1316F19}"); } }
 
@@ -163,8 +163,8 @@ namespace Ants {
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.Register_CurveParam("Curves", "C", "Curves.", GH_ParamAccess.list);
-            pManager.Register_BooleanParam("Connect Corners", "P", "Connect up the neighbors at corners?", false, GH_ParamAccess.item);
+            pManager.Register_CurveParam("Shapes", "S", "Shapes.", GH_ParamAccess.list);
+            pManager.Register_BooleanParam("Connect Corners", "C", "Connect up the neighbors at corners?", false, GH_ParamAccess.item);
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
