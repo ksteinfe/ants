@@ -167,6 +167,7 @@ namespace Ants {
         {
             pManager.RegisterParam(new GHParam_SpatialGraph(), "Spatial Graph", "S", "The Spatial Graph.", GH_ParamAccess.item);
             pManager.Register_StringParam("Selection Script", "SFunc", "The selection function to execute", GH_ParamAccess.item);
+            pManager.Register_BooleanParam("One or All", "Bool", "Select one or all", GH_ParamAccess.item);
             pManager.Register_StringParam("Eval Script", "EFunc", "The evaluation function to execute", GH_ParamAccess.item);
             pManager.Register_DoubleParam("Value", "V", "Initial Values", GH_ParamAccess.list);
             pManager.Register_IntegerParam("Generations", "G", "Number of Generations to create.", 0, GH_ParamAccess.item);
@@ -181,7 +182,9 @@ namespace Ants {
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             AWorld refwrld = new AWorld();
+            bool SelectType = false;
             List<double> v_list = new List<double>();
+            Random rnd = new Random();
 
             //if (!DA.GetData(0, ref refwrld) || !refwrld.IsValid) return;
             //AWorld wrld = new AWorld(refwrld);
@@ -193,9 +196,10 @@ namespace Ants {
             string pyString = "";
             string spyString = "";
             if (!DA.GetData(1, ref spyString)) return;
-            if (!DA.GetData(2, ref pyString)) return;
-            if (!DA.GetDataList(3, v_list)) return;
-            if (!DA.GetData(4, ref nGen)) return;
+            if (!DA.GetData(2, ref SelectType)) return;
+            if (!DA.GetData(3, ref pyString)) return;
+            if (!DA.GetDataList(4, v_list)) return;
+            if (!DA.GetData(5, ref nGen)) return;
 
 
             // Sets the initial Generation by using the input v_list
@@ -250,6 +254,14 @@ namespace Ants {
                     
                     if (test) nodes_to_test.Add(i);
 
+                }
+
+                if (SelectType)
+                {
+                    int trial = rnd.Next(nodes_to_test.Count);
+                    int new_index = nodes_to_test[trial];
+                    nodes_to_test[0] = new_index;
+                    nodes_to_test.RemoveRange(1, nodes_to_test.Count - 1);
                 }
 
                 // evaluate list of cells
