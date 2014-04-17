@@ -175,13 +175,14 @@ namespace Ants
             SpatialGraph gph = new SpatialGraph();
             int pt_count = points_in.Count;
             
-
             // Create the nodes first so that their indices are orderly: 0,1,2,...
             for (int m = 0; m < pt_count; m++)
             {
                 gph.nodes.Add(points_in[m]);
                 gph.edges.Add(m, new List<int>());
             }
+
+            // Now add edge if distance is < threshold
             for (int m = 0; m < pt_count-1; m++)
                 for (int n = m+1; n < pt_count; n++)
                 {
@@ -206,6 +207,17 @@ namespace Ants
             const double intersection_tolerance = 0.001;
             const double overlap_tolerance = 0.0;
 
+            // Create the nodes first so that their indices match the order of the shapes
+            for (int m = 0; m < count; m++)
+            {
+                BoundingBox b1 = curves_in[m].GetBoundingBox(false);
+                Point3d p1 = b1.Center;
+                gph.nodes.Add(p1);
+                gph.edges.Add(m, new List<int>());
+            }
+
+
+            // Now add edges if shapes are touching
             for (int m = 0; m < count - 1; m++)
                 for (int n = m + 1; n < count; n++)
                 {
@@ -216,10 +228,12 @@ namespace Ants
                         // might do more intersection checking in the future
                         if ((events.Count > 1) || ((events.Count == 1) && (cnrs || !events[0].IsPoint)))
                         {
-                            BoundingBox b1 = curves_in[m].GetBoundingBox(false);
-                            BoundingBox b2 = curves_in[n].GetBoundingBox(false);
-                            Point3d p1 = b1.Center;
-                            Point3d p2 = b2.Center;
+                            //BoundingBox b1 = curves_in[m].GetBoundingBox(false);
+                            //BoundingBox b2 = curves_in[n].GetBoundingBox(false);
+                            //Point3d p1 = b1.Center;
+                            //Point3d p2 = b2.Center;
+                            Point3d p1 = gph.nodes[m];
+                            Point3d p2 = gph.nodes[n];
                             var vec = p1 - p2;
                             double length = vec.Length;
                             gph.AddEdge(p1, p2, length);
