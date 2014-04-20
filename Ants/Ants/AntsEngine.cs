@@ -245,12 +245,13 @@ namespace Ants {
                     new_vals[i] = wrld.LatestGen[i];
 
                     int[] neighboring_indices = wrld.gph.NeighboringIndexesOf(i);
+                    double[] n_wts = wrld.gph.NeighboringWeightsOf(i);
 
                     // build list of neighboring values
                     List<double> neighboring_vals = new List<double>();
                     for (int k = 0; k < neighboring_indices.Length; k++) neighboring_vals.Add(wrld.LatestGen[neighboring_indices[k]]);
 
-                    bool test = SelectCell(i, wrld.LatestGen[i], neighboring_vals);
+                    bool test = SelectCell(i, wrld.LatestGen[i], neighboring_vals, n_wts);
                     
                     if (test) nodes_to_test.Add(i);
 
@@ -274,7 +275,7 @@ namespace Ants {
                     List<double> neighboring_vals = new List<double>();
                     for (int k = 0; k < neighboring_indices.Length; k++) neighboring_vals.Add(wrld.LatestGen[neighboring_indices[k]]);
 
-                    double d = EvaluateCell(i, wrld.LatestGen[i], neighboring_vals);
+                    double d = EvaluateCell(i, wrld.LatestGen[i], neighboring_vals, wrld.gph.NeighboringWeightsOf(i));
                     //double d = g + i + 0.0;
 
                     new_vals[i] = d;
@@ -294,7 +295,7 @@ namespace Ants {
 
         }
 
-        private double EvaluateCell(int cell_index, double cur_val, List<double> n_vals)
+        private double EvaluateCell(int cell_index, double cur_val, List<double> n_vals, double[] n_wts)
         {
             var t = Type.GetType("IronPython.Runtime.List,IronPython");
             IList n_list = Activator.CreateInstance(t) as IList;
@@ -305,6 +306,7 @@ namespace Ants {
             }
             _py.SetVariable("n_vals", n_list);
             _py.SetVariable("h_val", cur_val);
+            _py.SetVariable("n_wts", n_wts);
             _py.SetVariable("h_idx", cell_index);
 
             try
@@ -319,7 +321,7 @@ namespace Ants {
             return System.Convert.ToDouble(o);
         }
 
-        private bool SelectCell(int cell_index, double cur_val, List<double> n_vals)
+        private bool SelectCell(int cell_index, double cur_val, List<double> n_vals, double[] n_wts)
         {
             var t = Type.GetType("IronPython.Runtime.List,IronPython");
             IList n_list = Activator.CreateInstance(t) as IList;
@@ -330,6 +332,7 @@ namespace Ants {
             }
             _spy.SetVariable("n_vals", n_list);
             _spy.SetVariable("h_val", cur_val);
+            _spy.SetVariable("n_wts", n_wts);
             _spy.SetVariable("h_idx", cell_index);
 
             try
