@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 
 [assembly: AssemblyTitle("Ants")]
-[assembly: AssemblyDescription("Python component for grasshopper")]
+[assembly: AssemblyDescription("Cellular automata  for grasshopper")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Ned Reifenstein and Kyle Steinfeld, stolen from Robert McNeel & Associates")]
 [assembly: AssemblyProduct("Ants")]

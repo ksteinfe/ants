@@ -1,0 +1,13 @@
+Notes on Alpha Release of Ants:
+Components:
+- Create graph from points
+- Create graph as a grid
+- Graph Explorer (Exclude)
+- Graph to Edges
+- Graph to Nodes
+- Ants Engine
+- Antworld to Graph
+- Genvals: Generation Values
+Data Types: 
+- Spatial Graph (SG)
+- Antworld (A)
