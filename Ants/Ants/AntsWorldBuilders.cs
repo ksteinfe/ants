@@ -113,81 +113,81 @@ namespace Ants {
 
     }
 
-    //public class GraphByLines : GH_Component
-    //{
+    public class GraphByLines : GH_Component
+    {
 
-    //    public GraphByLines()
-    //        //Call the base constructor
-    //        : base("Create Graph from Lines", "LnsGph", "Creates a Spatial Graph from a set of lines.", "Ants", "Graphs") { }
-    //    public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
-    //    public override Guid ComponentGuid { get { return new Guid("{4B2CA66B-20BB-49E4-9420-0BF618F770E2}"); } }
+        public GraphByLines()
+            //Call the base constructor
+            : base("Create Graph from Lines", "LnsGph", "Creates a Spatial Graph from a set of lines.", "Ants", "Graphs") { }
+        public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
+        public override Guid ComponentGuid { get { return new Guid("{4B2CA66B-20BB-49E4-9420-0BF618F770E2}"); } }
 
-    //    //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_points; } }
-
-
-    //    protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
-    //    {
-    //        pManager.Register_LineParam("Lines", "L", "Lines.", GH_ParamAccess.list);
-    //    }
-
-    //    protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
-    //    {
-    //        pManager.RegisterParam(new GHParam_SpatialGraph(), "SGraph", "S", "The resulting Spatial Graph.", GH_ParamAccess.item);
-    //    }
-
-    //    protected override void SolveInstance(IGH_DataAccess DA)
-    //    {
-    //        List<Line> lines_in = new List<Line>();
-
-    //        if (!DA.GetDataList(0, lines_in)) return;
-
-    //        SpatialGraph gph = SpatialGraph.GraphFromLines(lines_in);
-
-    //        DA.SetData(0, gph);
-
-    //    }
+        //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_points; } }
 
 
-    //}
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.Register_LineParam("Lines", "L", "Lines.", GH_ParamAccess.list);
+        }
 
-    //public class GraphByShapes : GH_Component
-    //{
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.RegisterParam(new GHParam_SpatialGraph(), "SGraph", "S", "The resulting Spatial Graph.", GH_ParamAccess.item);
+        }
 
-    //    public GraphByShapes()
-    //        //Call the base constructor
-    //        : base("Create Graph from Shapes", "CrvShp", "Creates a Spatial Graph from a set of Shapes (Curves).", "Ants", "Graphs") { }
-    //    public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
-    //    public override Guid ComponentGuid { get { return new Guid("{2740EF67-789D-44CE-B104-A78DD1316F19}"); } }
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+            List<Line> lines_in = new List<Line>();
 
-    //    //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_points; } }
+            if (!DA.GetDataList(0, lines_in)) return;
 
-    //    protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
-    //    {
-    //        pManager.Register_CurveParam("Shapes", "S", "Shapes.", GH_ParamAccess.list);
-    //        pManager.Register_BooleanParam("Connect Corners", "C", "Connect up the neighbors at corners?", false, GH_ParamAccess.item);
-    //    }
+            SpatialGraph gph = SpatialGraph.GraphFromLines(lines_in);
 
-    //    protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
-    //    {
-    //        pManager.RegisterParam(new GHParam_SpatialGraph(), "SGraph", "S", "The resulting Spatial Graph.", GH_ParamAccess.item);
-    //    }
+            DA.SetData(0, gph);
 
-    //    protected override void SolveInstance(IGH_DataAccess DA)
-    //    {
-    //        List<Curve> curves_in = new List<Curve>();
-    //        bool cnrs = true;
-
-    //        if (!DA.GetDataList(0, curves_in)) return;
-    //        if (!DA.GetData(1, ref cnrs)) return;
-
-    //        SpatialGraph gph = SpatialGraph.GraphFromCurves(curves_in, cnrs);
-
-    //        DA.SetData(0, gph);
-
-    //    }
+        }
 
 
-    //}
+    }
+
+    public class GraphByShapes : GH_Component
+    {
+
+        public GraphByShapes()
+            //Call the base constructor
+            : base("Create Graph from Shapes", "CrvShp", "Creates a Spatial Graph from a set of Shapes (Curves).", "Ants", "Graphs") { }
+        public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
+        public override Guid ComponentGuid { get { return new Guid("{2740EF67-789D-44CE-B104-A78DD1316F19}"); } }
+
+        //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_points; } }
+
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.Register_CurveParam("Shapes", "S", "Shapes.", GH_ParamAccess.list);
+            pManager.Register_BooleanParam("Connect Corners", "C", "Connect up the neighbors at corners?", false, GH_ParamAccess.item);
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.RegisterParam(new GHParam_SpatialGraph(), "SGraph", "S", "The resulting Spatial Graph.", GH_ParamAccess.item);
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+            List<Curve> curves_in = new List<Curve>();
+            bool cnrs = true;
+
+            if (!DA.GetDataList(0, curves_in)) return;
+            if (!DA.GetData(1, ref cnrs)) return;
+
+            SpatialGraph gph = SpatialGraph.GraphFromCurves(curves_in, cnrs);
+
+            DA.SetData(0, gph);
+
+        }
+
+
+    }
 
     public class GraphToEdges : GH_Component
     {
@@ -274,62 +274,62 @@ namespace Ants {
 
     }
 
-    //public class GraphExplorer : GH_Component
-    //{
+    public class GraphExplorer : GH_Component
+    {
 
-    //    public GraphExplorer()
-    //        //Call the base constructor
-    //        : base("Graph Explorer", "GphExp", "Explore a Graph.", "Ants", "Graphs") { }
-    //    public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
-    //    public override Guid ComponentGuid { get { return new Guid("{EFD017FD-8EB6-4074-AE5B-82B7C6D9E523}"); } }
+        public GraphExplorer()
+            //Call the base constructor
+            : base("Graph Explorer", "GphExp", "Explore a Graph.", "Ants", "Graphs") { }
+        public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
+        public override Guid ComponentGuid { get { return new Guid("{EFD017FD-8EB6-4074-AE5B-82B7C6D9E523}"); } }
 
-    //    //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_to_points; } }
-
-
-    //    protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
-    //    {
-    //        pManager.RegisterParam(new GHParam_SpatialGraph(), "Spatial Graph", "S", "The Spatial Graph to convert.", GH_ParamAccess.item);
-    //        pManager.Register_IntegerParam("Index of Node", "I", "Index of Node to Explore.", 0, GH_ParamAccess.item);
-    //    }
-
-    //    protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
-    //    {
-    //        pManager.Register_PointParam("Points", "P", "Node position.", GH_ParamAccess.item);
-    //        pManager.Register_IntegerParam("Neighbors", "N", "Neighbor Indices.", GH_ParamAccess.list);
-    //        pManager.Register_LineParam("Edges", "E", "Neighboring Edges", GH_ParamAccess.list);
-    //        pManager.Register_DoubleParam("Weights", "W", "Edge Weights.", GH_ParamAccess.list);
-            
-    //    }
-
-    //    protected override void SolveInstance(IGH_DataAccess DA)
-    //    {
-    //        SpatialGraph gph = new SpatialGraph();
-    //        int indx = 0;
-
-    //        if (!DA.GetData(0, ref gph)) return;
-    //        if (!DA.GetData(1, ref indx)) return;
-
-    //        if (indx > gph.nodes.Count - 1) indx = 0;
-
-    //        GH_Point ghPoint = new GH_Point(gph.nodes[indx]);
-    //        int[] neighbors =gph.NeighboringIndexesOf(indx);
-    //        double[] weights = gph.NeighboringWeightsOf(indx);
-
-    //        List<Line> lines = gph.EdgesToLines();
-    //        List<GH_Line> ghLines = new List<GH_Line>();
-
-    //        foreach (int neighbor in neighbors) ghLines.Add(new GH_Line(new Line(gph.nodes[indx], gph.nodes[neighbor])));
+        //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_to_points; } }
 
 
-    //        DA.SetData(0,ghPoint);
-    //        DA.SetDataList(1, neighbors);
-    //        DA.SetDataList(2, ghLines);
-    //        DA.SetDataList(3, weights);
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.RegisterParam(new GHParam_SpatialGraph(), "Spatial Graph", "S", "The Spatial Graph to convert.", GH_ParamAccess.item);
+            pManager.Register_IntegerParam("Index of Node", "I", "Index of Node to Explore.", 0, GH_ParamAccess.item);
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.Register_PointParam("Points", "P", "Node position.", GH_ParamAccess.item);
+            pManager.Register_IntegerParam("Neighbors", "N", "Neighbor Indices.", GH_ParamAccess.list);
+            pManager.Register_LineParam("Edges", "E", "Neighboring Edges", GH_ParamAccess.list);
+            pManager.Register_DoubleParam("Weights", "W", "Edge Weights.", GH_ParamAccess.list);
+
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+            SpatialGraph gph = new SpatialGraph();
+            int indx = 0;
+
+            if (!DA.GetData(0, ref gph)) return;
+            if (!DA.GetData(1, ref indx)) return;
+
+            if (indx > gph.nodes.Count - 1) indx = 0;
+
+            GH_Point ghPoint = new GH_Point(gph.nodes[indx]);
+            int[] neighbors = gph.NeighboringIndexesOf(indx);
+            double[] weights = gph.NeighboringWeightsOf(indx);
+
+            List<Line> lines = gph.EdgesToLines();
+            List<GH_Line> ghLines = new List<GH_Line>();
+
+            foreach (int neighbor in neighbors) ghLines.Add(new GH_Line(new Line(gph.nodes[indx], gph.nodes[neighbor])));
 
 
-    //    }
+            DA.SetData(0, ghPoint);
+            DA.SetDataList(1, neighbors);
+            DA.SetDataList(2, ghLines);
+            DA.SetDataList(3, weights);
 
-    //}
+
+        }
+
+    }
 
     public class AWorldGenVals : GH_Component
     {
@@ -368,39 +368,39 @@ namespace Ants {
 
     }
 
-    //public class AWorldToGraph : GH_Component
-    //{
+    public class AWorldToGraph : GH_Component
+    {
 
-    //    public AWorldToGraph()
-    //        //Call the base constructor
-    //        : base("Antworld to Graph", "AWGph", "Reads a Spatial Graph from an Antworld", "Ants", "Worlds") { }
-    //    public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
-    //    public override Guid ComponentGuid { get { return new Guid("{3FE80255-6BF1-45B1-A966-752F59DF7478}"); } }
+        public AWorldToGraph()
+            //Call the base constructor
+            : base("Antworld to Graph", "AWGph", "Reads a Spatial Graph from an Antworld", "Ants", "Worlds") { }
+        public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
+        public override Guid ComponentGuid { get { return new Guid("{3FE80255-6BF1-45B1-A966-752F59DF7478}"); } }
 
-    //    protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_ants_to_graph; } }
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_ants_to_graph; } }
 
 
-    //    protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
-    //    {
-    //        pManager.RegisterParam(new GHParam_AWorld(), "AWorld", "W", "The AntsWorld to convert.", GH_ParamAccess.item);
-    //    }
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.RegisterParam(new GHParam_AWorld(), "AWorld", "W", "The AntsWorld to convert.", GH_ParamAccess.item);
+        }
 
-    //    protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
-    //    {
-    //        pManager.RegisterParam(new GHParam_SpatialGraph(), "SGraph", "S", "The resulting Spatial Graph.", GH_ParamAccess.item);
-    //    }
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.RegisterParam(new GHParam_SpatialGraph(), "SGraph", "S", "The resulting Spatial Graph.", GH_ParamAccess.item);
+        }
 
-    //    protected override void SolveInstance(IGH_DataAccess DA)
-    //    {
-    //        AWorld refwrld = new AWorld();
-    //        if (!DA.GetData(0, ref refwrld) || !refwrld.IsValid) return;
-    //        AWorld wrld = new AWorld(refwrld);
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+            AWorld refwrld = new AWorld();
+            if (!DA.GetData(0, ref refwrld) || !refwrld.IsValid) return;
+            AWorld wrld = new AWorld(refwrld);
 
-    //        DA.SetData(0, wrld.gph);
+            DA.SetData(0, wrld.gph);
 
-    //    }
+        }
 
-    //}
+    }
 
 }
 
