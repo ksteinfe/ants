@@ -139,6 +139,7 @@
     <None Include="Resources\Ants_Icons_ant_select.png" />
     <None Include="Resources\Ants_Icons_ant_world.png" />
     <None Include="Resources\Ants_Icons_ants_to_graph.png" />
+    <Content Include="Picnic.dll" />
     <Content Include="Resources\Ants_Icons_Param_SpatialGraph.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -7,6 +7,7 @@ using Rhino.Runtime;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+//using Picnic;
 
 namespace Ants {
     public class AntsEngineByFunction : GH_Component {
@@ -17,7 +18,7 @@ namespace Ants {
 
         public AntsEngineByFunction()
             //Call the base constructor
-            : base("Ants Engine", "Ants", "Creates a time history sequence. Build 05.07.14.", "Ants", "Worlds") { }
+            : base("Ants Engine", "Ants", "Creates a time history sequence. Build 06.02.14.", "Ants", "Worlds") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{7A7838C0-2EDA-451D-A9CF-973B72247E5E}"); } }
 
@@ -38,6 +39,7 @@ namespace Ants {
         protected override void SolveInstance(IGH_DataAccess DA) {
             AWorld refwrld = new AWorld();
             List<double> v_list = new List<double>();
+            //GH_Dict test = GH_Dict.create("a", 1.0);
 
             //if (!DA.GetData(0, ref refwrld) || !refwrld.IsValid) return;
             //AWorld wrld = new AWorld(refwrld);
