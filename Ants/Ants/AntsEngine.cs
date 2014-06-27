@@ -7,6 +7,22 @@ using Rhino.Runtime;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+
+using Microsoft.Scripting;
+using Microsoft.Scripting.Hosting;
+
+using IronPython;
+using IronPython.Modules;
+using IronPython.Compiler.Ast;
+using IronPython.Runtime.Binding;
+using IronPython.Runtime;
+using IronPython.Runtime.Exceptions;
+using IronPython.Runtime.Types;
+using IronPython.Runtime.Operations;
+using IronPython.Compiler;
+using IronPython.Hosting;
+
+
 //using Picnic;
 
 namespace Ants {
@@ -18,7 +34,7 @@ namespace Ants {
 
         public AntsEngineByFunction()
             //Call the base constructor
-            : base("Ants Engine", "Ants", "Creates a time history sequence. Build 06.02.14.", "Ants", "Worlds") { }
+            : base("Ants Engine", "Ants", "Creates a time history sequence. Build 06.26.14.", "Ants", "Worlds") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{7A7838C0-2EDA-451D-A9CF-973B72247E5E}"); } }
 
@@ -26,7 +42,7 @@ namespace Ants {
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager) {
             pManager.RegisterParam(new GHParam_SpatialGraph(), "Spatial Graph", "S", "The Spatial Graph.", GH_ParamAccess.item);
-            pManager.Register_StringParam("Script", "Func", "The function to execute", GH_ParamAccess.item);
+            pManager.Register_GenericParam("Script", "F", "The function to execute", GH_ParamAccess.item);
             pManager.Register_DoubleParam("Value", "V", "Initial Values", GH_ParamAccess.list);
             pManager.Register_IntegerParam("Generations", "G", "Number of Generations to create.", 0, GH_ParamAccess.item);
         }
@@ -39,6 +55,7 @@ namespace Ants {
         protected override void SolveInstance(IGH_DataAccess DA) {
             AWorld refwrld = new AWorld();
             List<double> v_list = new List<double>();
+            GH_ObjectWrapper f = new GH_ObjectWrapper();
             //GH_Dict test = GH_Dict.create("a", 1.0);
 
             //if (!DA.GetData(0, ref refwrld) || !refwrld.IsValid) return;
@@ -49,7 +66,7 @@ namespace Ants {
 
             int nGen = 0;
             string pyString = "";
-            if (!DA.GetData(1, ref pyString)) return;
+            if (!DA.GetData(1, ref f)) return;
             if (!DA.GetDataList(2, v_list)) return;
             if (!DA.GetData(3, ref nGen)) return;
 
@@ -67,9 +84,11 @@ namespace Ants {
 
             AWorld wrld = new AWorld(gph, val_list);
 
-            _py = PythonScript.Create();
-            _py.Output = this.m_py_output.Write;
-            _compiled_py = _py.Compile(pyString);
+            ///_py = PythonScript.Create();
+            ///_py.Output = this.m_py_output.Write;
+            ///_compiled_py = _py.Compile(pyString);
+
+            ScriptEngine pyEngine = Python.CreateEngine();
 
             // console out
             Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.GH_String> consoleOut = new Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.GH_String>();
@@ -91,10 +110,14 @@ namespace Ants {
                     for (int k = 0; k < neighboring_indices.Length; k++) neighboring_vals.Add(wrld.LatestGen[neighboring_indices[k]]);
 
 
-                    double d = EvaluateCell(i, wrld.LatestGen[i], neighboring_vals);
+                    dynamic result = pyEngine.Operations.Invoke(f.Value, wrld.LatestGen[i], neighboring_vals);
+
+                    double return_object = (double)result;
+
+                    //double d = EvaluateCell(i, wrld.LatestGen[i], neighboring_vals);
                     //double d = g + i + 0.0;
 
-                    new_vals[i] = d;
+                    new_vals[i] = return_object;
                 }
                 wrld.AddGen(new_vals);
 
