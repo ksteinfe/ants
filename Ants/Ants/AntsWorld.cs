@@ -13,11 +13,11 @@ namespace Ants {
     public class AWorld : GH_Goo<object>, GH_IO.GH_ISerializable
     {
         public SpatialGraph gph;
-        // a list of arrays of doubles. 
+        // a list of arrays of objects. 
         // since we don't know how many timesteps we'll create, we use a List for outer container.
         // but, since we do know how many nodes we have in each timestep, we can use a fixed-size array for the inner container
-        public List<double []> gens;
-        public double[] igen;
+        public List<object []> gens;
+        public object[] igen;
         public bool initialized;
 
         public AWorld()
@@ -25,31 +25,31 @@ namespace Ants {
                 this.initialized = false;
         }
 
-        public AWorld(SpatialGraph initalGraph, double[] initalValues) : base() {
+        public AWorld(SpatialGraph initalGraph, object[] initalValues) : base() {
             this.gph = new SpatialGraph(initalGraph);
             this.igen = initalValues;
             this.ClearGens();
             this.initialized = true;
         }
 
-        public double[] LatestGen
+        public object[] LatestGen
         {
             // use this method to grab out the latest generation of values.
             // there should always be the same number of values stored here as there are nodes in this.gph
             get { return this.gens[gens.Count - 1]; }
         }
 
-        public void AddGen(double[] vals)
+        public void AddGen(object[] vals)
         {
             //TODO: figure out how to use this method to successively add generations to a world from outside this class
             // TODO: ensure that there are the same number of values stored in the appended list as there are nodes in this.gph
-            double[] ret = new double[vals.Length];
+            object[] ret = new object[vals.Length];
             for (int i = 0; i < vals.Length; i++) ret[i] = vals[i];
             this.gens.Add(ret);
         }
 
         public void ClearGens() {
-            this.gens = new List<double[]>();
+            this.gens = new List<object[]>();
             this.gens.Add(this.igen);
         }
 
@@ -68,8 +68,8 @@ namespace Ants {
 
             this.gph = new SpatialGraph(instance.gph);
             this.igen = instance.igen;
-            this.gens = new List<double[]>();
-            foreach (double[] gen in instance.gens) {
+            this.gens = new List<object[]>();
+            foreach (object[] gen in instance.gens) {
                 this.gens.Add(gen);
             }
             this.initialized = true;
@@ -118,14 +118,14 @@ namespace Ants {
         {
             /*
             public SpatialGraph gph;
-            public List<double []> gens;
-            public double[] igen;
+            public List<object []> gens;
+            public object[] igen;
             public bool initialized;
              */
             //writer.SetString("GenCount", this.GenCount.ToString());
 
             List<String> genstrings = new List<string>();
-            foreach (double[] gen in gens) genstrings.Add(string.Join(",", gen));
+            foreach (object[] gen in gens) genstrings.Add(string.Join(",", gen));
             writer.SetString("gens", string.Join(";", genstrings));
             
             writer.SetString("igen", string.Join(",", this.igen));
@@ -144,16 +144,16 @@ namespace Ants {
             {
                 string[] igenstringArr = igenstring.Split(',');
                 if (igenstringArr.Length == 0) return false;
-                this.igen = new double[igenstringArr.Length];
+                this.igen = new object[igenstringArr.Length];
                 for (int i = 0; i < igenstringArr.Length; i++) igen[i] = (double.Parse(igenstringArr[i]));
 
                 string[] genstringsArr = genstrings.Split(';');
                 if (genstringsArr.Length == 0) return false;
-                this.gens = new List<double[]>();
+                this.gens = new List<object[]>();
                 foreach (String genstring in genstringsArr){
                     string[] genstringArr = genstring.Split(',');
                     if (genstringArr.Length == 0) return false;
-                    double[] gen = new double[genstringArr.Length];
+                    object[] gen = new object[genstringArr.Length];
                     for (int i = 0; i < genstringArr.Length; i++) gen[i] = (double.Parse(genstringArr[i]));
                     this.gens.Add(gen);
                 }

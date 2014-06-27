@@ -351,19 +351,31 @@ namespace Ants {
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.Register_DoubleParam("Values", "V", "List of extracted values", GH_ParamAccess.list);
+            pManager.Register_GenericParam("Values", "V", "List of extracted values", GH_ParamAccess.list);
         }
 
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             AWorld refwrld = new AWorld();
+            List<GH_ObjectWrapper> output = new List<GH_ObjectWrapper>();
             if (!DA.GetData(0, ref refwrld) || !refwrld.IsValid) return;
             AWorld wrld = new AWorld(refwrld);
 
             int g = 0;
             if (!DA.GetData(1, ref g)) return;
             if (g > wrld.GenCount - 1) g = wrld.GenCount - 1;
-            DA.SetDataList(0, wrld.gens[g]);
+
+            for (int i = 0; i < wrld.gens[g].Length; i++)
+            {
+
+                GH_ObjectWrapper temp = new GH_ObjectWrapper(wrld.gens[g][i]);
+
+                output.Add(temp);
+
+            }
+
+
+            DA.SetDataList(0, output);
         }
 
     }
