@@ -57,7 +57,7 @@ namespace Ants {
             //List<double> v_list = new List<double>();
 
             List<GH_ObjectWrapper> vals = new List<GH_ObjectWrapper>();
-            List<object> v_list = new List<object>();
+            List<GH_ObjectWrapper> v_list = new List<GH_ObjectWrapper>();
             List<GH_ObjectWrapper> output = new List<GH_ObjectWrapper>();
             GH_ObjectWrapper f = new GH_ObjectWrapper();
 
@@ -78,7 +78,7 @@ namespace Ants {
             // convert vals to v_list
             for (int i = 0; i < vals.Count; i++)
             {
-                v_list.Add(vals[i].Value);
+                v_list.Add(vals[i]);
             }
 
             // Sets the initial Generation by using the input v_list
@@ -88,11 +88,20 @@ namespace Ants {
             for (int i = 0; i < gph.nodes.Count; i++)
             {
                 if (v_i == v_list.Count) v_i = 0;
-                val_list[i] = v_list[v_i];
+                var temp = v_list[v_i].Value;
+                if (temp.GetType().ToString().Contains("GH_")) {
+                    val_list[i] = temp;
+                }
+                else
+                {
+                    val_list[i] = v_list[v_i];
+                }
                 v_i++;
             }
 
             AWorld wrld = new AWorld(gph, val_list);
+            GH_Number n = new GH_Number();
+            var w =n.Value;
 
             ///_py = PythonScript.Create();
             ///_py.Output = this.m_py_output.Write;
