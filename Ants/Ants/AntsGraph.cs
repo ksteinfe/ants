@@ -80,6 +80,20 @@ namespace Ants
             return true;
         }
 
+        // change the nodes in a graph object
+        public bool ChangePts(List<Point3d> new_nodes)
+        {
+            int count = new_nodes.Count;
+
+            for (int i = 0; i < count; i++)
+            {
+                this.nodes[i] = new_nodes[i];
+            }
+
+            return true;
+        }
+
+
         public Point3d[] NeighboringPointsOf(int nodeIdx)
         {
             if (!this.edges.ContainsKey(nodeIdx)) return new Point3d[0];

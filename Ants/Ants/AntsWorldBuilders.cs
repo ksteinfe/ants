@@ -331,6 +331,48 @@ namespace Ants {
 
     }
 
+    public class GraphChange : GH_Component
+    {
+
+        public GraphChange()
+            //Call the base constructor
+            : base("Change Nodes of a Graph.", "ChPts", "Replaces nodes in a Spatial Graph.", "Ants", "Graphs") { }
+        public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
+        public override Guid ComponentGuid { get { return new Guid("{D99A038D-418E-4530-A1B1-62AA627B298A}"); } }
+
+        //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_points; } }
+
+
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.RegisterParam(new GHParam_SpatialGraph(), "Spatial Graph", "S", "The Spatial Graph to change.", GH_ParamAccess.item);
+            pManager.Register_PointParam("Points", "P", "Points.", GH_ParamAccess.list);
+
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.RegisterParam(new GHParam_SpatialGraph(), "SGraph", "S", "The resulting Spatial Graph.", GH_ParamAccess.item);
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+            List<Point3d> points_in = new List<Point3d>();
+            SpatialGraph gph = new SpatialGraph();
+
+            if (!DA.GetData(0, ref gph)) return;
+            if (!DA.GetDataList(1, points_in)) return;
+
+            bool test = gph.ChangePts(points_in);
+
+            DA.SetData(0, gph);
+
+        }
+
+
+    }
+
+
     public class AWorldGenVals : GH_Component
     {
 

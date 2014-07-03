@@ -34,7 +34,7 @@ namespace Ants {
 
         public AntsEngineByFunction()
             //Call the base constructor
-            : base("Ants Engine", "Ants", "Creates a time history sequence. Build 06.26.14.", "Ants", "Worlds") { }
+            : base("Ants Engine", "Ants", "Creates a time history sequence. Build 07.02.14.", "Ants", "Worlds") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{7A7838C0-2EDA-451D-A9CF-973B72247E5E}"); } }
 
@@ -59,12 +59,9 @@ namespace Ants {
             List<GH_ObjectWrapper> vals = new List<GH_ObjectWrapper>();
             List<GH_ObjectWrapper> v_list = new List<GH_ObjectWrapper>();
             List<GH_ObjectWrapper> output = new List<GH_ObjectWrapper>();
+
+
             GH_ObjectWrapper f = new GH_ObjectWrapper();
-
-            //GH_Dict test = GH_Dict.create("a", 1.0);
-
-            //if (!DA.GetData(0, ref refwrld) || !refwrld.IsValid) return;
-            //AWorld wrld = new AWorld(refwrld);
 
             SpatialGraph gph = new SpatialGraph();
             if (!DA.GetData(0, ref gph)) return;
