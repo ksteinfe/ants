@@ -34,7 +34,7 @@ namespace Ants {
 
         public AntsEngineByFunction()
             //Call the base constructor
-            : base("Ants Engine", "Ants", "Creates a time history sequence. Build 07.02.14.", "Ants", "Worlds") { }
+            : base("Ants Engine", "Ants", "Creates a time history sequence. Build 07.04.14.", "Ants", "Worlds") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{7A7838C0-2EDA-451D-A9CF-973B72247E5E}"); } }
 
@@ -67,7 +67,7 @@ namespace Ants {
             if (!DA.GetData(0, ref gph)) return;
 
             int nGen = 0;
-            string pyString = "";
+            //string pyString = "";
             if (!DA.GetData(1, ref f)) return;
             if (!DA.GetDataList(2, vals)) return;
             if (!DA.GetData(3, ref nGen)) return;
@@ -97,14 +97,32 @@ namespace Ants {
             }
 
             AWorld wrld = new AWorld(gph, val_list);
-            GH_Number n = new GH_Number();
-            var w =n.Value;
 
-            ///_py = PythonScript.Create();
+            _py = PythonScript.Create();
+            _py.Output = RhinoApp.Write;
+
+
             ///_py.Output = this.m_py_output.Write;
             ///_compiled_py = _py.Compile(pyString);
 
             ScriptEngine pyEngine = Python.CreateEngine();
+            //pyEngine.Runtime.IO.RedirectToConsole();
+            StringList m = new StringList();
+            System.IO.TextWriter t = System.IO.TextWriter.Synchronized(m);
+            System.IO.MemoryStream ms = new System.IO.MemoryStream();
+            
+            //System.IO.StreamWriter strw = System.IO.StreamWriter.Synchronized(new StringList());
+
+            pyEngine.Runtime.IO.SetOutput(ms, new System.IO.StreamWriter(ms));
+
+            //pyEngine.Runtime.IO.SetOutput(strw, t);
+
+            Console.SetOut(t);
+            //System.Console.Out.Write();
+
+            Console.Write("Test");
+
+            
 
             // console out
             Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.GH_String> consoleOut = new Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.GH_String>();
@@ -114,7 +132,7 @@ namespace Ants {
             for (int g = 0; g < nGen; g++)
             {
                 // console out
-                this.m_py_output.Reset();
+                //this.m_py_output.Reset();
 
                 object[] new_vals = new object[wrld.NodeCount];
                 for (int i = 0; i < wrld.NodeCount; i++)
@@ -134,6 +152,10 @@ namespace Ants {
                     //object d = g + i + 0.0;
 
                     new_vals[i] = return_object;
+
+                    
+                    
+                    string str = ReadFromStream(ms);
                 }
 
                 wrld.AddGen(new_vals);
@@ -141,7 +163,7 @@ namespace Ants {
                 // console out
                 Grasshopper.Kernel.Data.GH_Path key_path = new Grasshopper.Kernel.Data.GH_Path(g);
                 List<Grasshopper.Kernel.Types.GH_String> gh_strs = new List<Grasshopper.Kernel.Types.GH_String>();
-                foreach (String str in this.m_py_output.Result) gh_strs.Add(new Grasshopper.Kernel.Types.GH_String(str));
+                foreach (String str in m.Result) gh_strs.Add(new Grasshopper.Kernel.Types.GH_String(str));
                 consoleOut.AppendRange(gh_strs, key_path);
 
 
@@ -150,6 +172,18 @@ namespace Ants {
             DA.SetDataTree(0, consoleOut);
             DA.SetData(1, wrld);
 
+        }
+
+
+        private static string ReadFromStream(System.IO.MemoryStream ms)
+        {
+            int length = (int)ms.Length;
+            Byte[] bytes = new Byte[length];
+
+            ms.Seek(0, System.IO.SeekOrigin.Begin);
+            ms.Read(bytes, 0, (int)ms.Length);
+
+            return Encoding.GetEncoding("utf-8").GetString(bytes, 0, (int)ms.Length);
         }
 
         private object EvaluateCell(int cell_index, object cur_val, List<object> n_vals) {
@@ -409,10 +443,11 @@ namespace Ants {
     /// <summary>
     /// Used to capture the output stream from an executing python script
     /// </summary>
-    class StringList {
+    class StringList : System.IO.TextWriter
+    {
         private readonly List<string> _txts = new List<string>();
 
-        public void Write(string s) {
+        public override void Write(string s) {
             _txts.Add(s);
         }
 
@@ -424,6 +459,10 @@ namespace Ants {
             get { return new System.Collections.ObjectModel.ReadOnlyCollection<string>(_txts); }
         }
 
+        public override System.Text.Encoding Encoding
+        {
+            get { return System.Text.Encoding.UTF8; }
+        }
         public override string ToString() {
             var sb = new StringBuilder();
             foreach (string s in _txts)
@@ -431,4 +470,5 @@ namespace Ants {
             return sb.ToString();
         }
     }
+
 }
