@@ -34,7 +34,7 @@ namespace Ants {
 
         public AntsEngineByFunction()
             //Call the base constructor
-            : base("Ants Engine", "Ants", "Creates a time history sequence. Build 07.04.14.", "Ants", "Worlds") { }
+            : base("Ants Engine", "Ants", "Creates a time history sequence. Build 07.05.14.", "Ants", "Worlds") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{7A7838C0-2EDA-451D-A9CF-973B72247E5E}"); } }
 
@@ -99,30 +99,16 @@ namespace Ants {
             AWorld wrld = new AWorld(gph, val_list);
 
             _py = PythonScript.Create();
-            _py.Output = RhinoApp.Write;
+            _py.Output = this.m_py_output.Write;
 
-
-            ///_py.Output = this.m_py_output.Write;
-            ///_compiled_py = _py.Compile(pyString);
+            _py.SetVariable("test", f.Value);
+            _compiled_py = _py.Compile("\n");
+            _compiled_py.Execute(_py);
 
             ScriptEngine pyEngine = Python.CreateEngine();
-            //pyEngine.Runtime.IO.RedirectToConsole();
-            StringList m = new StringList();
-            System.IO.TextWriter t = System.IO.TextWriter.Synchronized(m);
-            System.IO.MemoryStream ms = new System.IO.MemoryStream();
-            
-            //System.IO.StreamWriter strw = System.IO.StreamWriter.Synchronized(new StringList());
-
-            pyEngine.Runtime.IO.SetOutput(ms, new System.IO.StreamWriter(ms));
-
-            //pyEngine.Runtime.IO.SetOutput(strw, t);
-
-            Console.SetOut(t);
-            //System.Console.Out.Write();
-
-            Console.Write("Test");
-
-            
+            ScriptScope pyScope = pyEngine.CreateScope();
+            //pyEngine.Execute("import sys\n", pyScope);
+            //pyScope.SetVariable("test", f.Value);
 
             // console out
             Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.GH_String> consoleOut = new Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.GH_String>();
@@ -132,7 +118,7 @@ namespace Ants {
             for (int g = 0; g < nGen; g++)
             {
                 // console out
-                //this.m_py_output.Reset();
+                this.m_py_output.Reset();
 
                 object[] new_vals = new object[wrld.NodeCount];
                 for (int i = 0; i < wrld.NodeCount; i++)
@@ -143,19 +129,17 @@ namespace Ants {
                     List<object> neighboring_vals = new List<object>();
                     for (int k = 0; k < neighboring_indices.Length; k++) neighboring_vals.Add(wrld.LatestGen[neighboring_indices[k]]);
 
+                    try
+                    {
+                        dynamic result = pyScope.Engine.Operations.Invoke(f.Value, wrld.LatestGen[i], neighboring_vals);
+                        new_vals[i] =  (object)result;
+                    }
+                    catch (Exception ex)
+                    {
+                        AddErrorNicely(m_py_output, ex);
+                        new_vals[i] = new object();
+                    }
 
-                    dynamic result = pyEngine.Operations.Invoke(f.Value, wrld.LatestGen[i], neighboring_vals);
-
-                    object return_object = (object)result;
-
-                    //object d = EvaluateCell(i, wrld.LatestGen[i], neighboring_vals);
-                    //object d = g + i + 0.0;
-
-                    new_vals[i] = return_object;
-
-                    
-                    
-                    string str = ReadFromStream(ms);
                 }
 
                 wrld.AddGen(new_vals);
@@ -163,9 +147,8 @@ namespace Ants {
                 // console out
                 Grasshopper.Kernel.Data.GH_Path key_path = new Grasshopper.Kernel.Data.GH_Path(g);
                 List<Grasshopper.Kernel.Types.GH_String> gh_strs = new List<Grasshopper.Kernel.Types.GH_String>();
-                foreach (String str in m.Result) gh_strs.Add(new Grasshopper.Kernel.Types.GH_String(str));
+                foreach (String str in this.m_py_output.Result) gh_strs.Add(new Grasshopper.Kernel.Types.GH_String(str));
                 consoleOut.AppendRange(gh_strs, key_path);
-
 
             }
 
@@ -174,17 +157,6 @@ namespace Ants {
 
         }
 
-
-        private static string ReadFromStream(System.IO.MemoryStream ms)
-        {
-            int length = (int)ms.Length;
-            Byte[] bytes = new Byte[length];
-
-            ms.Seek(0, System.IO.SeekOrigin.Begin);
-            ms.Read(bytes, 0, (int)ms.Length);
-
-            return Encoding.GetEncoding("utf-8").GetString(bytes, 0, (int)ms.Length);
-        }
 
         private object EvaluateCell(int cell_index, object cur_val, List<object> n_vals) {
             var t = Type.GetType("IronPython.Runtime.List,IronPython");
