@@ -5,6 +5,7 @@ using System.Drawing;
 using Rhino;
 using Rhino.Runtime;
 using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 
@@ -54,10 +55,13 @@ namespace Ants {
 
         protected override void SolveInstance(IGH_DataAccess DA) {
             AWorld refwrld = new AWorld();
-            //List<double> v_list = new List<double>();
+            List<object> v_list = new List<object>();
+            //List<object> vals = new List<object>();
+            var IP_List_Type = Type.GetType("IronPython.Runtime.List,IronPython");
+
 
             List<GH_ObjectWrapper> vals = new List<GH_ObjectWrapper>();
-            List<GH_ObjectWrapper> v_list = new List<GH_ObjectWrapper>();
+            //List<GH_ObjectWrapper> v_list = new List<GH_ObjectWrapper>();
             List<GH_ObjectWrapper> output = new List<GH_ObjectWrapper>();
 
 
@@ -67,16 +71,14 @@ namespace Ants {
             if (!DA.GetData(0, ref gph)) return;
 
             int nGen = 0;
-            //string pyString = "";
             if (!DA.GetData(1, ref f)) return;
             if (!DA.GetDataList(2, vals)) return;
             if (!DA.GetData(3, ref nGen)) return;
 
-            // convert vals to v_list
-            for (int i = 0; i < vals.Count; i++)
-            {
-                v_list.Add(vals[i]);
-            }
+            // Convert List<GH_ObjectWrappers> to List<Object>
+            // Where each object is a .NET type rather than a GH type
+
+            v_list = AWorld.Convert_List(vals);
 
             // Sets the initial Generation by using the input v_list
             // if it runs out of values, it starts over (wraps)
@@ -85,14 +87,7 @@ namespace Ants {
             for (int i = 0; i < gph.nodes.Count; i++)
             {
                 if (v_i == v_list.Count) v_i = 0;
-                var temp = v_list[v_i].Value;
-                if (temp.GetType().ToString().Contains("GH_")) {
-                    val_list[i] = temp;
-                }
-                else
-                {
-                    val_list[i] = v_list[v_i];
-                }
+                val_list[i] = v_list[v_i];
                 v_i++;
             }
 
@@ -101,14 +96,16 @@ namespace Ants {
             _py = PythonScript.Create();
             _py.Output = this.m_py_output.Write;
 
+
+            // Not quite sure why this works, but appears to be necessary to
+            // initialize the python environment and allow output to be captured
             _py.SetVariable("test", f.Value);
             _compiled_py = _py.Compile("\n");
             _compiled_py.Execute(_py);
 
             ScriptEngine pyEngine = Python.CreateEngine();
             ScriptScope pyScope = pyEngine.CreateScope();
-            //pyEngine.Execute("import sys\n", pyScope);
-            //pyScope.SetVariable("test", f.Value);
+
 
             // console out
             Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.GH_String> consoleOut = new Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.GH_String>();
@@ -117,7 +114,6 @@ namespace Ants {
             // Should move code into the Antsworld Class
             for (int g = 0; g < nGen; g++)
             {
-                // console out
                 this.m_py_output.Reset();
 
                 object[] new_vals = new object[wrld.NodeCount];
@@ -126,12 +122,13 @@ namespace Ants {
                     int[] neighboring_indices = wrld.gph.NeighboringIndexesOf(i);
 
                     // build list of neighboring values
-                    List<object> neighboring_vals = new List<object>();
+                    IList neighboring_vals = Activator.CreateInstance(IP_List_Type) as IList;
+
                     for (int k = 0; k < neighboring_indices.Length; k++) neighboring_vals.Add(wrld.LatestGen[neighboring_indices[k]]);
 
                     try
                     {
-                        dynamic result = pyScope.Engine.Operations.Invoke(f.Value, wrld.LatestGen[i], neighboring_vals);
+                        dynamic result = pyScope.Engine.Operations.Invoke(f.Value, wrld.LatestGen[i], (IList<object>)neighboring_vals);
                         new_vals[i] =  (object)result;
                     }
                     catch (Exception ex)
@@ -190,6 +187,7 @@ namespace Ants {
 
             sw.Write(error);
         }
+
     }
 
     //public class AntsEngineBySelection : GH_Component

@@ -95,6 +95,95 @@ namespace Ants {
         public override string TypeDescription { get { return "Represents an Ants Graph"; } }
         public override string TypeName { get { return "Ants Graph"; } }
 
+        /// <summary>
+        ///  Generic Conversions
+        /// </summary>
+        /// <param name="obj_in"></param>
+        /// <param name="obj_out"></param>
+
+        public static List<object> Convert_List(List<GH_ObjectWrapper> raw_in)
+        {
+            To_Something Converter = null;
+            List<object> obj_in = new List<object>();
+            List<object> obj_out = new List<object>();
+
+            //if (obj_in[0].GetType() == typeof(GH_ObjectWrapper))
+            for (int i = 0; i < raw_in.Count; i++)
+            {
+                obj_in.Add(raw_in[i].Value);
+            }
+
+
+            // Create conversion dictionary
+
+            Dictionary<Type, Ants.AWorld.To_Something> typeDict = new Dictionary<Type, Ants.AWorld.To_Something>
+            {
+                {typeof(GH_Number),To_Double},
+                {typeof(GH_String),To_String},
+                {typeof(GH_Point),To_Point},
+                {typeof(GH_Boolean),To_Bool}
+                // Add more type conversions here
+            };
+
+            // Try to read a converter from the dictionary
+            // If there is none, catch the error and proceed
+            // We'll let the user handle the data uncoverted in their Ironpython code
+
+            try { Converter = typeDict[obj_in[0].GetType()]; }
+            catch (SystemException) { }
+
+
+            // Convert each object in list
+
+            for (int i = 0; i < obj_in.Count; i++)
+            {
+                if (!(Converter == null))
+                {
+                    obj_out.Add(Converter(obj_in[i]));
+                }
+                else
+                {
+                    obj_out.Add(obj_in[i]);
+                }
+            }
+
+
+            return obj_out;
+        }
+
+        public static object To_Double(object in_val)
+        {
+            double n = new double();
+            var y = GH_Convert.ToDouble(in_val, out n, GH_Conversion.Both);
+            return (object)n;
+        }
+
+        public static object To_String(object in_val)
+        {
+            string n = "";
+            var y = GH_Convert.ToString(in_val, out n, GH_Conversion.Both);
+            return (object)n;
+        }
+
+        public static object To_Point(object in_val)
+        {
+            Point3d n = new Point3d();
+            var y = GH_Convert.ToPoint3d(in_val, ref n, GH_Conversion.Both);
+            return (object)n;
+        }
+
+        public static object To_Bool(object in_val)
+        {
+            bool n = false;
+            GH_Convert.ToBoolean(in_val, out n, GH_Conversion.Both);
+            return (object)n;
+        }
+
+        public delegate object To_Something(object o);
+
+        /// end of generic converter block
+
+
         // This function is called when Grasshopper needs to convert other data into AntsGraph type.
         // We won't know what type of object the other thing is
         // We can try converting it to, say, a collection of lines, and running the algo for setting points and connections that way
@@ -201,6 +290,8 @@ namespace Ants {
         }
 
     }
+
+
 
 }
 
