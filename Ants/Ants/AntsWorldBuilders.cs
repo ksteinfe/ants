@@ -405,7 +405,7 @@ namespace Ants {
 
             int g = 0;
             if (!DA.GetData(1, ref g)) return;
-            if (g > wrld.GenCount - 1) g = wrld.GenCount - 1;
+            if (g > wrld.GenCount ) g = wrld.GenCount - 1;
 
             for (int i = 0; i < wrld.gens[g].Length; i++)
             {

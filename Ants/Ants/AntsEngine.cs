@@ -80,6 +80,8 @@ namespace Ants {
 
             v_list = AWorld.Convert_List(vals);
 
+            var y = v_list[0].GetType();
+
             // Sets the initial Generation by using the input v_list
             // if it runs out of values, it starts over (wraps)
             object[] val_list = new object[gph.nodes.Count];

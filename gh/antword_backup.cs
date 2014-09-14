@@ -1,4 +1,4 @@
-﻿using Grasshopper.Kernel;
+using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
 using System;
 using System.Drawing;
@@ -213,15 +213,19 @@ namespace Ants {
             //public List<object []> gens;
             //public object[] igen;
             //public bool initialized;
+
+
             
 
             writer.SetString("GenCount", this.GenCount.ToString());
 
+            /// bool tf = gho.Write(writer);
 
             List<String> genstrings = new List<string>();
 
             writer.SetString("type", string.Join(";", this.gens[0][0].GetType().Name));
             
+            //writer.SetString("GH_Type", string.Join(";", gh.GetType()));
 
 
             foreach (object[] gen in gens)
@@ -245,6 +249,32 @@ namespace Ants {
             }
             writer.SetString("gens", string.Join(";", genstrings));
 
+            // Point3d pt = new Point3d(1, 2, 3);
+            //SpatialGraph sg = this.gph;
+
+            //GH_Point gh_pt = new GH_Point(pt);
+
+            //bool tf = gh_pt.Write(writer);
+
+            //GH_ObjectWrapper ght = new GH_ObjectWrapper(sg);
+
+            //string test = ght.ToString();
+
+            //GH_ObjectWrapper ght1 = new GH_ObjectWrapper();
+
+            
+            //string value = pt.GetType().ToString();
+
+            //Type ntype = Type.GetType(value);
+
+            //string s = "1,2,3";
+
+            //object o = Convert.ChangeType(s, Type.GetType(value));
+
+            //object o1 = Convert.ChangeType(s, typeof(Point3d));
+
+
+            //writer.SetString("igen", string.Join(",", this.igen));
 
             if (!this.gph.Write(writer)) return false;
 
@@ -267,13 +297,59 @@ namespace Ants {
             string igenstring = "";
             string genstrings = "";
             string type_name = "";
+            ///GH_Point gh_pt = new GH_Point();
+            ///GH_ObjectWrapper gho = new GH_ObjectWrapper();
+
+            ///bool tf = gho.Read(reader);
+
+            //string value = "System.Boolean";
+            ///string value = "SpatialGraph";
+
+            ///Type ntype = Type.GetType(value);
+
+            ///object new_test = ntype.GetMethod("Parse");
+
+            ///object new_test2 = Activator.CreateInstance(ntype);
+
+            ///Type GH_typename = gh_pt.GetType();
+
+            ///var ass = GH_typename.Assembly.GetTypes();
+            ///string s = gh_pt.GetType().Name;
+
+            //var trial = Activator.CreateInstanceFrom(ass, s);
 
             if (!reader.TryGetString("type", ref type_name)) return false;
 
+            //if (!reader.TryGetString("GH_Type", ref s)) return false;
+
+
+            //var t = Type.GetType("Boolean");
+            //dynamic t = Type.GetType(type_name);
+            
+            //var new_gh = Activator.CreateInstance(t);
+            //var sam = Type.GetType(s);
 
             if (!reader.TryGetString("gens", ref genstrings)) return false;
             try
             {
+                //string[] igenstringArr = igenstring.Split(',');
+                //if (igenstringArr.Length == 0) return false;
+                //this.igen = new object[igenstringArr.Length];
+                //object o = new object();
+                //for (int i = 0; i < igenstringArr.Length; i++)
+                //{
+                //    if (type_name == "Boolean")
+                //    {
+                //        o = (object)bool.Parse(igenstringArr[i]);
+                //    }
+                //    else
+                //    {
+                //        o = (object)double.Parse(igenstringArr[i]);
+                //    }
+
+                //    igen[i] = o;
+
+                //}
 
                 object o = new object();
                 string[] genstringsArr = genstrings.Split(';');
@@ -285,36 +361,21 @@ namespace Ants {
                     object[] gen = new object[genstringArr.Length];
                     for (int i = 0; i < genstringArr.Length; i++)
                     {
-                        switch(type_name){
-                            case "Boolean":
-                                o = (object)bool.Parse(genstringArr[i]);
-                                break;
-                            case "Point3d":
-                                string [] args = genstringArr[i].Split(',');
-                                Point3d p = new Point3d(double.Parse(args[0]), double.Parse(args[1]), double.Parse(args[2]));
-                                o = p as object;
-                                break;
-                            default:
-                                o = (object)double.Parse(genstringArr[i]);
-                                break;
+                        if (type_name == "Boolean")
+                        {
+                            o = (object)bool.Parse(genstringArr[i]);
+                        }
+                        else if (type_name == "Point3d")
+                        {
+                            string [] args = genstringArr[i].Split(',');
+                            Point3d p = new Point3d(double.Parse(args[0]), double.Parse(args[1]), double.Parse(args[2]));
+                            o = p as object;
                         }
 
-
-                        //if (type_name == "Boolean")
-                        //{
-                        //    o = (object)bool.Parse(genstringArr[i]);
-                        //}
-                        //else if (type_name == "Point3d")
-                        //{
-                        //    string [] args = genstringArr[i].Split(',');
-                        //    Point3d p = new Point3d(double.Parse(args[0]), double.Parse(args[1]), double.Parse(args[2]));
-                        //    o = p as object;
-                        //}
-
-                        //else
-                        //{
-                        //    o = (object)double.Parse(genstringArr[i]);
-                        //}
+                        else
+                        {
+                            o = (object)double.Parse(genstringArr[i]);
+                        }
 
                         gen[i] = o;
 
