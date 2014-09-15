@@ -220,7 +220,14 @@ namespace Ants {
 
             List<String> genstrings = new List<string>();
 
-            writer.SetString("type", string.Join(";", this.gens[0][0].GetType().Name));
+            string o_type = this.gens[0][0].GetType().Name;
+
+            if (o_type.Contains("Dictionary"))
+            {
+                o_type = "Dictionary";
+            }
+
+            writer.SetString("type", string.Join(";",o_type));
             
 
 
@@ -229,7 +236,32 @@ namespace Ants {
                 string genstring = "";
                 foreach (object o in gen)
                 {
-                    string ts = o.ToString();
+                    string ts = "";
+                    if (o_type.Contains("Dictionary"))
+                    {
+                        IDictionary idict = (IDictionary)o;
+//                        Dictionary<object, object> d = (Dictionary<object, object>)o;
+
+                        foreach (object key in idict.Keys)
+                        {
+                            if (ts == "")
+                            {
+                                ts = key.ToString() + "=" + idict[key].ToString();
+                            }
+                            else
+                            {
+                                ts = ts + "/" + key.ToString() + "=" + idict[key].ToString();
+                            }
+                            //newDict.Add(key.ToString(), idict[key].ToString());
+                        }
+                        //string ts = string(o);
+                        //Dictionary<object,object> myDict = new Dictionary<object,object>;
+                        //string ts = myDict.Select(x => x.Key + "=" + x.Value).Aggregate((s1, s2) => s1 + ";" + s2);
+                    }
+                    else
+                    {
+                        ts = o.ToString();
+                    }
                     if (genstring == "")
                     {
                         genstring = ts;
@@ -293,6 +325,15 @@ namespace Ants {
                                 string [] args = genstringArr[i].Split(',');
                                 Point3d p = new Point3d(double.Parse(args[0]), double.Parse(args[1]), double.Parse(args[2]));
                                 o = p as object;
+                                break;
+                            case "Dictionary":
+                                Dictionary<string, object> d = new Dictionary<string,object>();
+                                string[] pairs = genstringArr[i].Split('/');
+                                foreach (string pair in pairs) {
+                                    string [] kv = pair.Split('=');
+                                    d.Add(kv[0], ((object)double.Parse(kv[1])));
+                                }
+                                o = d as object;
                                 break;
                             default:
                                 o = (object)double.Parse(genstringArr[i]);
