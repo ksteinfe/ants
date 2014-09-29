@@ -1,6 +1,8 @@
 ﻿using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
 using System;
+using System.Runtime;
+using System.Runtime.CompilerServices;
 using System.Drawing;
 using Rhino;
 using Rhino.Runtime;
@@ -326,9 +328,41 @@ namespace Ants
             public Dictionary<Tuple<int, int>, double> weights;
             public int edgeCount;
              */
-            List<String> nodestrings = new List<string>();
-            foreach (Point3d pt in this.nodes) nodestrings.Add(pt.X.ToString() + "," + pt.Y.ToString() + "," + pt.Z.ToString());
-            writer.SetString("nodes", string.Join(";", nodestrings));
+
+
+
+            //string type_name = "GH_Boolean";
+
+            //dynamic t = Type.GetType(type_name);
+
+            //object objectValue = RuntimeHelpers.GetObjectValue(Activator.CreateInstance(typeof(GH_Number)));
+            //object objectValue = RuntimeHelpers.GetObjectValue(Activator.CreateInstance(t));
+            //GH_PersistentParam<T> p = new GH_PersistentParam<T>();
+
+
+            //List<String> nodestrings = new List<string>();
+            //foreach (Point3d pt in this.nodes) nodestrings.Add(pt.X.ToString() + "," + pt.Y.ToString() + "," + pt.Z.ToString());
+            //writer.SetString("nodes", string.Join(";", nodestrings));
+
+            //writer.SetString("points");
+
+            // Add Nodes
+            GH_IO.Serialization.GH_IWriter ch_writer = writer.CreateChunk("nodes");
+            int j = 0;
+            ch_writer.SetInt32("Count", this.nodes.Count);
+            foreach (Point3d pt in this.nodes)
+            {
+                GH_IO.Serialization.GH_IWriter item_writer = ch_writer.CreateChunk("Item", j);
+
+                GH_Point TP = new GH_Point(pt);
+
+                if (!TP.Write(item_writer)) return false;
+
+                j++;
+            }
+
+
+
 
             List<String> edgestrings = new List<string>();
             foreach (KeyValuePair<int, List<int>> entry in this.edges) edgestrings.Add(entry.Key.ToString() + ":" + string.Join(",", entry.Value));
@@ -337,6 +371,7 @@ namespace Ants
             List<String> weightstrings = new List<string>();
             foreach (KeyValuePair<Tuple<int, int>, double> entry in this.weights) weightstrings.Add(entry.Key.Item1 + "," + entry.Key.Item2 + ":" + entry.Value);
             writer.SetString("weights", string.Join(";", weightstrings));
+
 
 
             return true;
@@ -348,17 +383,79 @@ namespace Ants
             string nodestring = "";
             string edgestring = "";
             string weightstring = "";
-            if (!reader.TryGetString("nodes", ref nodestring) || !reader.TryGetString("edges", ref edgestring) || !reader.TryGetString("weights", ref weightstring)) return false;
+            List<GH_ObjectWrapper> r_pts= new List<GH_ObjectWrapper>();
+            List<object> pts = new List<object>();
+            Point3d pt = new Point3d();
+
+            //if (!reader.TryGetString("nodes", ref nodestring) || !reader.TryGetString("edges", ref edgestring) || !reader.TryGetString("weights", ref weightstring)) return false;
+
+            // 09.28.2014
+            if (reader.ChunkExists("nodes"))
+            {
+                GH_IO.Serialization.GH_IReader ch_reader = reader.FindChunk("nodes");
+                //int num = reader.FindItem("Count").Read;
+                int num = ch_reader.GetInt32("Count");
+                int num3 = num - 1;
+                bool flag = true;
+                bool tf = false;
+                for (int i = 0; i <= num3; i++)
+                {
+                    GH_IO.Serialization.GH_IReader reader2 = ch_reader.FindChunk("Item", i);
+                    if (reader2 == null)
+                    {
+                        reader.AddMessage("Missing persistent data entry.", GH_IO.Serialization.GH_Message_Type.error);
+                    }
+                    else
+                    {
+                        //T data = this.InstantiateT();
+                        GH_ObjectWrapper data = new GH_ObjectWrapper();
+                        foreach (GH_IO.Types.GH_Item item in reader2.Items)
+                        {
+                            var n = item.Name;
+                            var t = item.Type;
+                            tf = data.Read(reader2);
+
+                            if (tf)
+                            {
+                                var o = data.Value;
+                                r_pts.Add(data);
+
+                                var y = GH_Convert.ToPoint3d_Primary(o, ref pt);
+
+                                this.nodes.Add(pt);
+
+                            }
+                            else
+                            {
+                                flag = false;
+                                reader.AddMessage("Persistent data deserialization failed.", GH_IO.Serialization.GH_Message_Type.error);
+                            }
+
+                            //data = RuntimeHelpers.GetObjectValue(Activator.CreateInstance(t));
+
+                        }
+
+                    }
+                }
+
+                //this.nodes = AWorld.Convert_List(r_pts);
+            }
+
+            // 09.28.2014
+
+
+
+            
             try
             {
-                string[] nodestringArr = nodestring.Split(';');
-                this.nodes = new List<Point3d>();
-                foreach (String ptstring in nodestringArr)
-                {
-                    string[] coords = ptstring.Split(',');
-                    if (coords.Length != 3) return false;
-                    this.nodes.Add(new Point3d(double.Parse(coords[0]), double.Parse(coords[1]), double.Parse(coords[2])));
-                }
+                //string[] nodestringArr = nodestring.Split(';');
+                //this.nodes = new List<Point3d>();
+                //foreach (String ptstring in nodestringArr)
+                //{
+                //    string[] coords = ptstring.Split(',');
+                //    if (coords.Length != 3) return false;
+                //    this.nodes.Add(new Point3d(double.Parse(coords[0]), double.Parse(coords[1]), double.Parse(coords[2])));
+                //}
 
                 string[] edgestringArr = edgestring.Split(';');
                 this.edges = new Dictionary<int, List<int>>();
