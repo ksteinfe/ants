@@ -71,7 +71,7 @@ namespace Ants {
         }
 
         public int GenCount {
-            get { return this.gens.Count - 1; }
+            get { return this.gens.Count; }
         }
 
         #region // REQUIRED GH STUFF
