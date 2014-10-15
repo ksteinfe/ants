@@ -298,7 +298,7 @@ namespace Ants
             return String.Format("I am a Spatial Graph.\n I have {0} nodes in my graph and {1} connections. What else would you like to know?", this.nodes.Count, this.EdgeCount);
         }
         public override string TypeDescription { get { return "Represents a Spatial Graph"; } }
-        public override string TypeName { get { return "Spatial Graph"; } }
+        public override string TypeName { get { return "SpatialGraph"; } }
 
         // This function is called when Grasshopper needs to convert other data into SpatialGraph type.
         // We won't know what type of object the other thing is
@@ -355,13 +355,23 @@ namespace Ants
                 GH_IO.Serialization.GH_IWriter item_writer = ch_writer.CreateChunk("Item", j);
 
                 GH_Point TP = new GH_Point(pt);
+                //Point3d TP = new Point3d(pt);
+                //GH_ObjectWrapper gh_o = new GH_ObjectWrapper(TP);
+
+                //Type o_type = TP.GetType();
+
+                //System.Reflection.MethodInfo WriteMethod = o_type.GetMethod("Write");
+                //object w_o = WriteMethod.Invoke(TP, new object[] { item_writer});
+
+                //bool tf = gh_o.Value.Write(item_writer);
 
                 if (!TP.Write(item_writer)) return false;
 
+                //object o = TP;
+
+
                 j++;
             }
-
-
 
 
             List<String> edgestrings = new List<string>();
@@ -444,7 +454,7 @@ namespace Ants
             // 09.28.2014
 
 
-
+            if (!reader.TryGetString("edges", ref edgestring) || !reader.TryGetString("weights", ref weightstring)) return false;
             
             try
             {

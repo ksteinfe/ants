@@ -87,6 +87,7 @@
     <Compile Include="Ants\AntsWorld.cs" />
     <Compile Include="Ants\AntsWorldBuilders.cs" />
     <Compile Include="Ants\AntsGraph.cs" />
+    <Compile Include="Ants\AntFood.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

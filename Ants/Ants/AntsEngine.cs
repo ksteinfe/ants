@@ -35,7 +35,7 @@ namespace Ants {
 
         public AntsEngineByFunction()
             //Call the base constructor
-            : base("Ants Engine", "Ants", "Creates a time history sequence. Build 07.05.14.", "Ants", "Worlds") { }
+            : base("Ants Engine", "Ants", "Creates a time history sequence. Build 10.14.14.", "Ants", "Worlds") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{7A7838C0-2EDA-451D-A9CF-973B72247E5E}"); } }
 
@@ -84,12 +84,14 @@ namespace Ants {
 
             // Sets the initial Generation by using the input v_list
             // if it runs out of values, it starts over (wraps)
-            object[] val_list = new object[gph.nodes.Count];
+            //object[] val_list = new object[gph.nodes.Count];  **
+            List<object> val_list = new List<object>();
+
             int v_i = 0;
             for (int i = 0; i < gph.nodes.Count; i++)
             {
                 if (v_i == v_list.Count) v_i = 0;
-                val_list[i] = v_list[v_i];
+                val_list.Add(v_list[v_i]);
                 v_i++;
             }
 
@@ -118,19 +120,23 @@ namespace Ants {
             {
                 this.m_py_output.Reset();
 
-                object[] new_vals = new object[wrld.NodeCount];
+                //object[] new_vals = new object[wrld.NodeCount]; **
+                List<object> new_vals = new List<object>();
+
                 for (int i = 0; i < wrld.NodeCount; i++)
                 {
+                    new_vals.Add(0);
+
                     int[] neighboring_indices = wrld.gph.NeighboringIndexesOf(i);
 
                     // build list of neighboring values
                     IList neighboring_vals = Activator.CreateInstance(IP_List_Type) as IList;
 
-                    for (int k = 0; k < neighboring_indices.Length; k++) neighboring_vals.Add(wrld.LatestGen[neighboring_indices[k]]);
+                    for (int k = 0; k < neighboring_indices.Length; k++) neighboring_vals.Add(wrld.LatestGen.values[neighboring_indices[k]]);
 
                     try
                     {
-                        dynamic result = pyScope.Engine.Operations.Invoke(f.Value, wrld.LatestGen[i], (IList<object>)neighboring_vals);
+                        dynamic result = pyScope.Engine.Operations.Invoke(f.Value, wrld.LatestGen.values[i], (IList<object>)neighboring_vals);
                         new_vals[i] =  (object)result;
                     }
                     catch (Exception ex)

@@ -407,10 +407,10 @@ namespace Ants {
             if (!DA.GetData(1, ref g)) return;
             if (g > wrld.GenCount ) g = wrld.GenCount - 1;
 
-            for (int i = 0; i < wrld.gens[g].Length; i++)
+            for (int i = 0; i < wrld.gens[g].Val_Count; i++)
             {
 
-                GH_ObjectWrapper temp = new GH_ObjectWrapper(wrld.gens[g][i]);
+                GH_ObjectWrapper temp = new GH_ObjectWrapper(wrld.gens[g].values[i]);
 
                 output.Add(temp);
 

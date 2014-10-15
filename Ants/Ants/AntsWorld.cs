@@ -16,7 +16,8 @@ namespace Ants {
         // a list of arrays of objects. 
         // since we don't know how many timesteps we'll create, we use a List for outer container.
         // but, since we do know how many nodes we have in each timestep, we can use a fixed-size array for the inner container
-        public List<object []> gens;
+        //public List<object []> gens; **
+        public List<AntFood> gens;
         public object[] igen;
         public bool initialized;
 
@@ -25,35 +26,44 @@ namespace Ants {
                 this.initialized = false;
         }
 
-        public AWorld(SpatialGraph initialGraph, object[] initialValues) : base() {
+        public AWorld(SpatialGraph initialGraph, List<object> initialValues) : base() {
             this.gph = new SpatialGraph(initialGraph);
             /// this.igen = initialValues;
             //this.ClearGens();
-            this.gens = new List<object[]>();
-            this.gens.Add(initialValues);
+            //this.gens = new List<object[]>(); **
+
+            this.gens = new List<AntFood>();
+            AntFood new_gen = new AntFood();
+            new_gen.values = initialValues;
+            this.gens.Add(new_gen);
+
+            //this.gens.Add(initialValues); **
             ///
             this.initialized = true;
         }
 
-        public object[] LatestGen
+        public AntFood LatestGen
         {
             // use this method to grab out the latest generation of values.
             // there should always be the same number of values stored here as there are nodes in this.gph
+            
             get { return this.gens[gens.Count - 1]; }
         }
 
-        public void AddGen(object[] vals)
+        public void AddGen(List<object> vals)
         {
             //TODO: figure out how to use this method to successively add generations to a world from outside this class
             // TODO: ensure that there are the same number of values stored in the appended list as there are nodes in this.gph
-            object[] ret = new object[vals.Length];
-            for (int i = 0; i < vals.Length; i++) ret[i] = vals[i];
-            this.gens.Add(ret);
+            AntFood new_gen = new AntFood();
+
+            //object[] ret = new object[vals.Length];
+            for (int i = 0; i < vals.Count; i++) new_gen.values.Add(vals[i]);
+            this.gens.Add(new_gen);
         }
 
         public void ClearGens() {
-            this.gens = new List<object[]>();
-            this.gens.Add(this.igen);
+            this.gens = new List<AntFood>();
+            //this.gens.Add(this.igen);
         }
 
         public int NodeCount {
@@ -71,8 +81,9 @@ namespace Ants {
 
             this.gph = new SpatialGraph(instance.gph);
             this.igen = instance.igen;
-            this.gens = new List<object[]>();
-            foreach (object[] gen in instance.gens) {
+            //this.gens = new List<object[]>(); **
+            this.gens = new List<AntFood>();
+            foreach (AntFood gen in instance.gens) {
                 this.gens.Add(gen);
             }
             this.initialized = true;
@@ -86,7 +97,7 @@ namespace Ants {
             get
             {
                 if (!this.initialized) return false;
-                for (int i = 0; i < gens.Count; i++) if (gens[i].Length != gph.nodes.Count) return false;
+                for (int i = 0; i < gens.Count; i++) if (gens[i].Val_Count != gph.nodes.Count) return false;
                 return true;
             }
         }
@@ -95,8 +106,8 @@ namespace Ants {
         {
             return String.Format("I am an Ants World.\n I have {0} nodes in my graph, {1} connections, and {2} generations of history. What else would you like to know?", this.gph.nodes.Count, this.gph.EdgeCount, this.GenCount);
         }
-        public override string TypeDescription { get { return "Represents an Ants Graph"; } }
-        public override string TypeName { get { return "Ants Graph"; } }
+        public override string TypeDescription { get { return "Represents an Ant World"; } }
+        public override string TypeName { get { return "AntWorld"; } }
 
         /// <summary>
         ///  Generic Conversions
@@ -209,80 +220,29 @@ namespace Ants {
         public override bool Write(GH_IO.Serialization.GH_IWriter writer)
         {
 
-            //public SpatialGraph gph;
-            //public List<object []> gens;
-            //public object[] igen;
-            //public bool initialized;
-            
-
-            writer.SetString("GenCount", this.GenCount.ToString());
-
-
-            List<String> genstrings = new List<string>();
-
-            string o_type = this.gens[0][0].GetType().Name;
-
-            if (o_type.Contains("Dictionary"))
+            // create a chunk for the generations
+            GH_IO.Serialization.GH_IWriter ch_writer = writer.CreateChunk("gens");
+            int j = 0;
+            ch_writer.SetInt32("Count", this.gens.Count);
+            foreach (AntFood gen in this.gens)
             {
-                o_type = "Dictionary";
+                GH_IO.Serialization.GH_IWriter item_writer = ch_writer.CreateChunk("Item", j);
+
+                if (!gen.Write(item_writer)) return false;
+
+                j++;
             }
 
-            writer.SetString("type", string.Join(";",o_type));
-            
+            // create a chunk for the graph
+            GH_IO.Serialization.GH_IWriter gr_writer = writer.CreateChunk("graph");
 
-
-            foreach (object[] gen in gens)
-            {
-                string genstring = "";
-                foreach (object o in gen)
-                {
-                    string ts = "";
-                    if (o_type.Contains("Dictionary"))
-                    {
-                        IDictionary idict = (IDictionary)o;
-//                        Dictionary<object, object> d = (Dictionary<object, object>)o;
-
-                        foreach (object key in idict.Keys)
-                        {
-                            if (ts == "")
-                            {
-                                ts = key.ToString() + "=" + idict[key].ToString();
-                            }
-                            else
-                            {
-                                ts = ts + "/" + key.ToString() + "=" + idict[key].ToString();
-                            }
-                            //newDict.Add(key.ToString(), idict[key].ToString());
-                        }
-                        //string ts = string(o);
-                        //Dictionary<object,object> myDict = new Dictionary<object,object>;
-                        //string ts = myDict.Select(x => x.Key + "=" + x.Value).Aggregate((s1, s2) => s1 + ";" + s2);
-                    }
-                    else
-                    {
-                        ts = o.ToString();
-                    }
-                    if (genstring == "")
-                    {
-                        genstring = ts;
-                    }
-                    else
-                    {
-                        genstring = genstring + ":" + ts;
-                    }
-
-                }
-                genstrings.Add(genstring);
-                //genstrings.Add(string.Join("::", gen));
-            }
-            writer.SetString("gens", string.Join(";", genstrings));
-
-
-            if (!this.gph.Write(writer)) return false;
+            if (!this.gph.Write(gr_writer)) return false;
 
             return base.Write(writer);
         }
 
+
+        // not used
         public static T ObjectDeserializer<T>(string XmlInput)
         {
             System.Xml.XmlDocument XmlDoc = new System.Xml.XmlDocument();
@@ -295,50 +255,97 @@ namespace Ants {
 
         public override bool Read(GH_IO.Serialization.GH_IReader reader)
         {
-
-            string igenstring = "";
-            string genstrings = "";
-            string type_name = "";
-
-            if (!reader.TryGetString("type", ref type_name)) return false;
+            this.ClearGens();
+            this.gph = new SpatialGraph();
 
 
-            if (!reader.TryGetString("gens", ref genstrings)) return false;
-            try
+            // read the generations chunk
+            if (reader.ChunkExists("gens"))
             {
+                GH_IO.Serialization.GH_IReader ch_reader = reader.FindChunk("gens");
+                int num = ch_reader.GetInt32("Count") - 1;
+                
 
-                object o = new object();
-                string[] genstringsArr = genstrings.Split(';');
-                if (genstringsArr.Length == 0) return false;
-                this.gens = new List<object[]>();
-                foreach (String genstring in genstringsArr){
-                    string[] genstringArr = genstring.Split(':');
-                    if (genstringArr.Length == 0) return false;
-                    object[] gen = new object[genstringArr.Length];
-                    for (int i = 0; i < genstringArr.Length; i++)
+                for (int i = 0; i <= num; i++)
+                {
+                    GH_IO.Serialization.GH_IReader reader2 = ch_reader.FindChunk("Item", i);
+                    if (reader2 == null)
                     {
-                        switch(type_name){
-                            case "Boolean":
-                                o = (object)bool.Parse(genstringArr[i]);
-                                break;
-                            case "Point3d":
-                                string [] args = genstringArr[i].Split(',');
-                                Point3d p = new Point3d(double.Parse(args[0]), double.Parse(args[1]), double.Parse(args[2]));
-                                o = p as object;
-                                break;
-                            case "Dictionary":
-                                Dictionary<string, object> d = new Dictionary<string,object>();
-                                string[] pairs = genstringArr[i].Split('/');
-                                foreach (string pair in pairs) {
-                                    string [] kv = pair.Split('=');
-                                    d.Add(kv[0], ((object)double.Parse(kv[1])));
-                                }
-                                o = d as object;
-                                break;
-                            default:
-                                o = (object)double.Parse(genstringArr[i]);
-                                break;
-                        }
+                        reader.AddMessage("Missing persistent data entry.", GH_IO.Serialization.GH_Message_Type.error);
+                    }
+                    else
+                    {
+                        AntFood data = new AntFood();
+                        if (!data.Read(reader2)) return false;
+                        this.AddGen(data.values);
+                    }
+                }
+            }
+
+            // read the graph chunk
+
+            if (reader.ChunkExists("graph"))
+            {
+                GH_IO.Serialization.GH_IReader gr_reader = reader.FindChunk("graph");
+                if (!this.gph.Read(gr_reader)) return false;
+            }
+
+
+            this.initialized = true;
+
+            return base.Read(reader);
+        }
+
+
+        #endregion
+
+    }
+
+            // garbage here:
+
+            //string igenstring = "";
+            //string genstrings = "";
+            //string type_name = "";
+
+            //if (!reader.TryGetString("type", ref type_name)) return false;
+
+
+            //if (!reader.TryGetString("gens", ref genstrings)) return false;
+            //try
+            //{
+
+            //    object o = new object();
+            //    string[] genstringsArr = genstrings.Split(';');
+            //    if (genstringsArr.Length == 0) return false;
+            //    this.gens = new List<object[]>();
+            //    foreach (String genstring in genstringsArr){
+            //        string[] genstringArr = genstring.Split(':');
+            //        if (genstringArr.Length == 0) return false;
+            //        object[] gen = new object[genstringArr.Length];
+            //        for (int i = 0; i < genstringArr.Length; i++)
+            //        {
+            //            switch(type_name){
+            //                case "Boolean":
+            //                    o = (object)bool.Parse(genstringArr[i]);
+            //                    break;
+            //                case "Point3d":
+            //                    string [] args = genstringArr[i].Split(',');
+            //                    Point3d p = new Point3d(double.Parse(args[0]), double.Parse(args[1]), double.Parse(args[2]));
+            //                    o = p as object;
+            //                    break;
+            //                case "Dictionary":
+            //                    Dictionary<string, object> d = new Dictionary<string,object>();
+            //                    string[] pairs = genstringArr[i].Split('/');
+            //                    foreach (string pair in pairs) {
+            //                        string [] kv = pair.Split('=');
+            //                        d.Add(kv[0], ((object)double.Parse(kv[1])));
+            //                    }
+            //                    o = d as object;
+            //                    break;
+            //                default:
+            //                    o = (object)double.Parse(genstringArr[i]);
+            //                    break;
+            //            }
 
 
                         //if (type_name == "Boolean")
@@ -357,37 +364,20 @@ namespace Ants {
                         //    o = (object)double.Parse(genstringArr[i]);
                         //}
 
-                        gen[i] = o;
+            //            gen[i] = o;
 
-                    }
-
-
-                    this.gens.Add(gen);
-                }
-            }
-            catch
-            {
-                return false;
-            }
-
-            this.gph = new SpatialGraph();
-            if (!this.gph.Read(reader)) return false;
+            //        }
 
 
-            this.initialized = true;
-            return base.Read(reader);
-        }
+            //        this.gens.Add(gen);
+            //    }
+            //}
+            //catch
+            //{
+            //    return false;
+            //}
 
 
-
-
-
-
-
-
-        #endregion
-
-    }
 
     public class GHParam_AWorld : GH_PersistentParam<AWorld>
     {
