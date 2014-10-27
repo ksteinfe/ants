@@ -190,67 +190,67 @@ namespace Ants
     }
 
 
-    public class GHParam_AntFood : GH_PersistentParam<AntFood>
-    {
-        public GHParam_AntFood()
-            : base(new GH_InstanceDescription("AntFood", "AF", "Stores a list of values for Ants", "Ants", "Worlds"))
-        { }
-        public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
-        public override System.Guid ComponentGuid { get { return new Guid("{36951A74-B21D-4E4F-85FF-A40EADA34318}"); } }
+    //public class GHParam_AntFood : GH_PersistentParam<AntFood>
+    //{
+    //    public GHParam_AntFood()
+    //        : base(new GH_InstanceDescription("AntFood", "AF", "Stores a list of values for Ants", "Ants", "Worlds"))
+    //    { }
+    //    public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
+    //    public override System.Guid ComponentGuid { get { return new Guid("{36951A74-B21D-4E4F-85FF-A40EADA34318}"); } }
 
         
-        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_Param_SpatialGraph1; } }
+    //    protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_Param_SpatialGraph1; } }
 
-        protected override GH_GetterResult Prompt_Singular(ref AntFood value)
-        {
-            return GH_GetterResult.cancel;
-        }
-        protected override GH_GetterResult Prompt_Plural(ref List<AntFood> values)
-        {
-            return GH_GetterResult.cancel;
-        }
+    //    protected override GH_GetterResult Prompt_Singular(ref AntFood value)
+    //    {
+    //        return GH_GetterResult.cancel;
+    //    }
+    //    protected override GH_GetterResult Prompt_Plural(ref List<AntFood> values)
+    //    {
+    //        return GH_GetterResult.cancel;
+    //    }
 
-    }
-
-
-    public class MakeFood : GH_Component
-    {
-
-        public MakeFood()
-            //Call the base constructor
-            : base("Make Ant Food", "MkAF", "Creates an AntFood object from a list.", "Ants", "Worlds") { }
-        public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
-        public override Guid ComponentGuid { get { return new Guid("{34701606-F023-4CAB-A4B4-A060791E3C8D}"); } }
-
-        //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_grid; } }
+    //}
 
 
-        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
-        {
-            pManager.Register_GenericParam("Value", "V", "Initial Values", GH_ParamAccess.list);
-        }
+    //public class MakeFood : GH_Component
+    //{
 
-        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
-        {
-            pManager.RegisterParam(new GHParam_AntFood(), "AntFood", "A", "The resulting AntFood.", GH_ParamAccess.item);
-        }
+    //    public MakeFood()
+    //        //Call the base constructor
+    //        : base("Make Ant Food", "MkAF", "Creates an AntFood object from a list.", "Ants", "Worlds") { }
+    //    public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
+    //    public override Guid ComponentGuid { get { return new Guid("{34701606-F023-4CAB-A4B4-A060791E3C8D}"); } }
 
-        protected override void SolveInstance(IGH_DataAccess DA)
-        {
-            AntFood af = new AntFood();
-
-            List<object> v_list = new List<object>();
-
-            if (!DA.GetDataList(0, v_list)) return;
-
-            af.values = v_list;
-
-            DA.SetData(0, af);
-
-        }
+    //    //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_grid; } }
 
 
-    }
+    //    protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+    //    {
+    //        pManager.Register_GenericParam("Value", "V", "Initial Values", GH_ParamAccess.list);
+    //    }
+
+    //    protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+    //    {
+    //        pManager.RegisterParam(new GHParam_AntFood(), "AntFood", "A", "The resulting AntFood.", GH_ParamAccess.item);
+    //    }
+
+    //    protected override void SolveInstance(IGH_DataAccess DA)
+    //    {
+    //        AntFood af = new AntFood();
+
+    //        List<object> v_list = new List<object>();
+
+    //        if (!DA.GetDataList(0, v_list)) return;
+
+    //        af.values = v_list;
+
+    //        DA.SetData(0, af);
+
+    //    }
+
+
+    //}
 
 
 

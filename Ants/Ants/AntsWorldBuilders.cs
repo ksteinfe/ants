@@ -122,7 +122,7 @@ namespace Ants {
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{4B2CA66B-20BB-49E4-9420-0BF618F770E2}"); } }
 
-        //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_points; } }
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_lines; } }
 
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
@@ -159,7 +159,7 @@ namespace Ants {
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{2740EF67-789D-44CE-B104-A78DD1316F19}"); } }
 
-        //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_points; } }
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_create_graph_from_shapes; } }
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
@@ -279,11 +279,11 @@ namespace Ants {
 
         public GraphExplorer()
             //Call the base constructor
-            : base("Graph Explorer", "GphExp", "Explore a Graph.", "Ants", "Graphs") { }
+            : base("Graph Explorer", "GphExp", "Explore a Graph.", "Ants", "Utilities") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{EFD017FD-8EB6-4074-AE5B-82B7C6D9E523}"); } }
 
-        //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_to_points; } }
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_explorer; } }
 
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
@@ -336,11 +336,11 @@ namespace Ants {
 
         public GraphChange()
             //Call the base constructor
-            : base("Change Nodes of a Graph.", "ChPts", "Replaces nodes in a Spatial Graph.", "Ants", "Graphs") { }
+            : base("Change Nodes of a Graph.", "ChPts", "Replaces nodes in a Spatial Graph.", "Ants", "Utilities") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{D99A038D-418E-4530-A1B1-62AA627B298A}"); } }
 
-        //protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_graph_by_points; } }
+        protected override Bitmap Icon { get { return Ants.Properties.Resources.Ants_Icons_change_nodes_of_graph; } }
 
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
@@ -427,7 +427,7 @@ namespace Ants {
 
         public AWorldToGraph()
             //Call the base constructor
-            : base("Antworld to Graph", "AWGph", "Reads a Spatial Graph from an Antworld", "Ants", "Worlds") { }
+            : base("Antworld to Graph", "AWGph", "Reads a Spatial Graph from an Antworld", "Ants", "Utilities") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{3FE80255-6BF1-45B1-A966-752F59DF7478}"); } }
 

@@ -93,6 +93,26 @@ namespace Ants.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap Ants_Icons_change_nodes_of_graph {
+            get {
+                object obj = ResourceManager.GetObject("Ants_Icons_change_nodes_of_graph", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Ants_Icons_create_graph_from_shapes {
+            get {
+                object obj = ResourceManager.GetObject("Ants_Icons_create_graph_from_shapes", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap Ants_Icons_graph_by_grid {
             get {
                 object obj = ResourceManager.GetObject("Ants_Icons_graph_by_grid", resourceCulture);
@@ -116,6 +136,16 @@ namespace Ants.Properties {
         public static System.Drawing.Bitmap Ants_Icons_graph_by_points {
             get {
                 object obj = ResourceManager.GetObject("Ants_Icons_graph_by_points", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap Ants_Icons_graph_explorer {
+            get {
+                object obj = ResourceManager.GetObject("Ants_Icons_graph_explorer", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

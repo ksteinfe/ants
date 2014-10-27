@@ -151,4 +151,13 @@
   <data name="Ants_Icons_ants_to_graph" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Ants_Icons_ants_to_graph.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Ants_Icons_change_nodes_of_graph" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ants_Icons_change nodes of graph.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Ants_Icons_create_graph_from_shapes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ants_Icons_create graph from shapes.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Ants_Icons_graph_explorer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ants_Icons_graph explorer.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

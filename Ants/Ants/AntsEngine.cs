@@ -35,7 +35,7 @@ namespace Ants {
 
         public AntsEngineByFunction()
             //Call the base constructor
-            : base("Ants Engine", "Ants", "Creates a time history sequence. Build 10.15.14.", "Ants", "Worlds") { }
+            : base("Ants Engine", "Ants", "Creates a time history sequence. Build 10.27.14.", "Ants", "Worlds") { }
         public override Grasshopper.Kernel.GH_Exposure Exposure { get { return GH_Exposure.primary; } }
         public override Guid ComponentGuid { get { return new Guid("{7A7838C0-2EDA-451D-A9CF-973B72247E5E}"); } }
 
@@ -154,6 +154,8 @@ namespace Ants {
                 List<Grasshopper.Kernel.Types.GH_String> gh_strs = new List<Grasshopper.Kernel.Types.GH_String>();
                 foreach (String str in this.m_py_output.Result) gh_strs.Add(new Grasshopper.Kernel.Types.GH_String(str));
                 consoleOut.AppendRange(gh_strs, key_path);
+
+                GH_Colour ghc = new GH_Colour();
 
             }
 
