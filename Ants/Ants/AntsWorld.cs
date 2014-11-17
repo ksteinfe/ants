@@ -18,7 +18,7 @@ namespace Ants {
         // but, since we do know how many nodes we have in each timestep, we can use a fixed-size array for the inner container
         //public List<object []> gens; **
         public List<AntFood> gens;
-        public object[] igen;
+        //public object[] igen;
         public bool initialized;
 
         public AWorld()
@@ -80,7 +80,7 @@ namespace Ants {
         {
 
             this.gph = new SpatialGraph(instance.gph);
-            this.igen = instance.igen;
+            //this.igen = instance.igen;
             //this.gens = new List<object[]>(); **
             this.gens = new List<AntFood>();
             foreach (AntFood gen in instance.gens) {
